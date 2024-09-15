@@ -1,53 +1,82 @@
 import Image from "next/image";
+import ResponsiveAppBar from "../componants/navbar";
+
+const thaiDestinations = [
+  {
+    name: 'Hua Hin / Cha-am',
+    accommodations: '5,328 accommodations',
+    image: "../images/hua_hin.jpg",
+  },
+  {
+    name: 'Chonburi',
+    accommodations: '1,144 accommodations',
+    image: "../images/chonburi.jpg",
+  },
+  {
+    name: 'Khao Yai',
+    accommodations: '1,611 accommodations',
+    image: "../images/khao_yai.jpg",
+  },
+  {
+    name: 'Krabi',
+    accommodations: '2,053 accommodations',
+    image: "../images/krabi.jpg",
+  },
+  {
+    name: 'Hat Yai',
+    accommodations: '566 accommodations',
+    image: "../images/hat_yai.jpg",
+  },
+];
+
+const myanmarDestinations = [
+  // Placeholder for Myanmar destinations
+];
 
 export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <ResponsiveAppBar />
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+        <h1 className="text-3xl font-bold">Recommended Destinations</h1>
+        
+        <section className="w-full">
+          <h2 className="text-2xl font-semibold mb-4">Thai Destinations</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {thaiDestinations.map((destination) => (
+              <div key={destination.name} className="text-center p-2">
+                <img
+                  src={destination.image}
+                  alt={destination.name}
+                  className="w-48 h-48 object-cover rounded-lg mx-auto"
+                />
+                <h6 className="mt-2">{destination.name}</h6>
+                <p className="text-sm text-gray-500">{destination.accommodations}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+        <section className="w-full mt-8">
+          <h2 className="text-2xl font-semibold mb-4">Myanmar Destinations</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {myanmarDestinations.length === 0 ? (
+              <p className="text-center w-full">Coming soon...</p>
+            ) : (
+              myanmarDestinations.map((destination) => (
+                <div key={destination.name} className="text-center p-2">
+                  <img
+                    src={destination.image}
+                    alt={destination.name}
+                    className="w-48 h-48 object-cover rounded-lg mx-auto"
+                  />
+                  <h6 className="mt-2">{destination.name}</h6>
+                  <p className="text-sm text-gray-500">{destination.accommodations}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
