@@ -1,5 +1,5 @@
 
-import ResponsiveAppBar from "../componants/navbar";
+import ResponsiveAppBar from "../components/navbar";
 
 const thaiDestinations = [
   {
