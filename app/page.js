@@ -1,31 +1,31 @@
-import Image from "next/image";
+
 import ResponsiveAppBar from "../componants/navbar";
 
 const thaiDestinations = [
   {
     name: 'Hua Hin / Cha-am',
     accommodations: '5,328 accommodations',
-    image: "../images/hua_hin.jpg",
+    image: "https://i.pinimg.com/564x/64/86/f5/6486f561389a12eb0363c17fed2a418f.jpg",
   },
   {
     name: 'Chonburi',
     accommodations: '1,144 accommodations',
-    image: "../images/chonburi.jpg",
+    image: "https://api.tourismthailand.org/upload/live/destination/4-9055.png",
   },
   {
     name: 'Khao Yai',
     accommodations: '1,611 accommodations',
-    image: "../images/khao_yai.jpg",
+    image: "https://www.furama.com/images/adayinkhaoyaiCover-900x606.jpg",
   },
   {
     name: 'Krabi',
     accommodations: '2,053 accommodations',
-    image: "../images/krabi.jpg",
+    image: "https://content.r9cdn.net/rimg/dimg/d7/d3/e9304e90-city-44862-164ae46b3a9.jpg?crop=true&width=1020&height=498",
   },
   {
     name: 'Hat Yai',
     accommodations: '566 accommodations',
-    image: "../images/hat_yai.jpg",
+    image: "https://ik.imagekit.io/tvlk/blog/2023/05/shutterstock_1146758282.jpg?tr=dpr-2,w-675",
   },
 ];
 
@@ -79,51 +79,7 @@ export default function Home() {
         </section>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        
       </footer>
     </div>
   );
