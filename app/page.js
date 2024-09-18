@@ -35,9 +35,11 @@ const myanmarDestinations = [
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <ResponsiveAppBar />
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div>
+    <ResponsiveAppBar />
+    <div className="grid grid-rows-[20px_1fr_20px] min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      
+      <main className="flex flex-col gap-5 row-start-2 items-center sm:items-start">
         <h1 className="text-3xl font-bold">Recommended Destinations</h1>
         
         <section className="w-full">
@@ -48,7 +50,7 @@ export default function Home() {
                 <img
                   src={destination.image}
                   alt={destination.name}
-                  className="w-48 h-48 object-cover rounded-lg mx-auto"
+                  className="w-80 h-48 object-cover rounded-lg mx-auto"
                 />
                 <h6 className="mt-2">{destination.name}</h6>
                 <p className="text-sm text-gray-500">{destination.accommodations}</p>
@@ -81,6 +83,7 @@ export default function Home() {
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         
       </footer>
+    </div>
     </div>
   );
 }
