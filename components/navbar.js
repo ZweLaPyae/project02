@@ -5,6 +5,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
+import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -16,7 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import Link from 'next/link';  // Import Link from Next.js
 
-const pages = ['Trips', 'Destinations'];
+const pages = ['Trips', 'Booked'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -39,7 +40,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: 'grey' }}>
+    <AppBar position="sticky" sx={{  backgroundColor: 'rgba(45, 46, 46, 0.7)',backdropFilter: 'blur(10px)'}}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Link href="/" passHref>
@@ -50,21 +51,21 @@ function ResponsiveAppBar() {
               aria-label="logo"
               sx={{ mr: 2 }}
             >
-              <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+              <ModeOfTravelIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize:30, color: "#f3f593"}} />
               <Typography
                 variant="h6"
                 noWrap
                 component="div"
                 sx={{
                   display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
+                  fontFamily: 'suse',
+                  fontWeight: 500,
+                  fontSize: 25,
+                  color: '#f3f593',
                   textDecoration: 'none',
                 }}
               >
-                noe noe travels
+                Havenly Travels
               </Typography>
             </IconButton>
           </Link>
@@ -120,7 +121,7 @@ function ResponsiveAppBar() {
                 component="div"
                 sx={{
                   flexGrow: 1,
-                  fontFamily: 'monospace',
+                  fontFamily: 'suse',
                   fontWeight: 700,
                   letterSpacing: '.3rem',
                   color: 'inherit',
@@ -136,7 +137,12 @@ function ResponsiveAppBar() {
               <Link key={page} href={`/${page.toLowerCase()}`} passHref>
                 <Button
                   onClick={handleCloseNavMenu}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  sx={{ 
+                    my: 2, color: 'white',
+                    fontFamily: 'suse', 
+                    fontSize:15, 
+                    display: 'block'
+                  }}
                 >
                   {page}
                 </Button>

@@ -52,14 +52,45 @@ function Trips() {
         <Typography variant="h4" gutterBottom align="center">
           Top 10 Countries to Visit
         </Typography>
-        <Box component="form" onSubmit={handleAddCountry} sx={{ mb: 4, backgroundColor: 'grey.200', p: 2, borderRadius: 1 }}>
+        <Box component="form" onSubmit={handleAddCountry} sx={{ 
+          mb: 4, 
+          backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
+          backdropFilter: 'blur(10px)', // Blur for glass effect
+          borderRadius: '10px', // Rounded corners for the card
+          boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
+          border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
+          color: 'white', // Ensure text is visible on dark background 
+          p: 2, 
+          borderRadius: 1 }}>
           <TextField
             label="Country Name"
             name="name"
             value={newCountry.name}
             onChange={handleChange}
             required
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
+              borderRadius: '5px',
+              input: {
+                color: 'white', // Text color
+              },
+              label: {
+                color: 'white', // Label color
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Border color when focused
+                },
+              },
+            }}
+          
           />
           <TextField
             label="Image URL"
@@ -67,7 +98,28 @@ function Trips() {
             value={newCountry.image}
             onChange={handleChange}
             required
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
+              borderRadius: '5px',
+              input: {
+                color: 'white', // Text color
+              },
+              label: {
+                color: 'white', // Label color
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Border color when focused
+                },
+              },
+            }}
           />
           <TextField
             label="Description"
@@ -75,17 +127,55 @@ function Trips() {
             value={newCountry.description}
             onChange={handleChange}
             required
-            sx={{ mr: 2 }}
+            sx={{
+              mr: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
+              borderRadius: '5px',
+              input: {
+                color: 'white', // Text color
+              },
+              label: {
+                color: 'white', // Label color
+              },
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'white', // Border color
+                },
+                '&:hover fieldset': {
+                  borderColor: 'white', // Border color on hover
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'white', // Border color when focused
+                },
+              },
+            }}
           />
           <Button type="submit" variant="contained">Add Country</Button>
         </Box>
         <Grid container spacing={4}>
           {countries.map((country, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
-              <Card onClick={() => handleCardClick(country.name)}>
+              <Card 
+               sx={{
+                backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
+                backdropFilter: 'blur(10px)', // Blur for glass effect
+                borderRadius: '10px', // Rounded corners for the card
+                boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
+                border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
+                color: 'white', // Ensure text is visible on dark background
+                transition: '0.3s', // Smooth transition for the hover effect
+                '&:hover': {
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.7)', // Glow effect on hover
+                transform: 'scale(1.05)', // Slightly enlarge the card on hover
+                }
+              }}
+              onClick={() => handleCardClick(country.name)}>
                 <CardMedia
                   component="img"
-                  sx={{ width: '100%', height: 200, objectFit: 'cover' }} // Set fixed size and object fit
+                  sx={{ width: '100%', 
+                    height: 200, 
+                    objectFit: 'cover'
+                   }} // Set fixed size and object fit
                   image={country.image}
                   alt={country.name}
                 />
@@ -93,10 +183,10 @@ function Trips() {
                   <Typography gutterBottom variant="h5" component="div">
                     {country.name}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="white">
                     {country.description}
                   </Typography>
-                  <Button variant="contained" color="secondary" onClick={(e) => { e.stopPropagation(); handleDeleteCountry(index); }}>
+                  <Button variant="contained" color="primary" onClick={(e) => { e.stopPropagation(); handleDeleteCountry(index); }}>
                     Delete
                   </Button>
                 </CardContent>
