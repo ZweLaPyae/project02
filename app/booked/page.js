@@ -31,8 +31,16 @@ function TripsPage() {
     alert(`Viewing details for trip ID: ${tripId}`);
   };
 
-  const removeTrip = (tripId) => {
-    setTrips(trips.filter(trip => trip.id !== tripId));
+  const removeDestination = (tripId, destinationId) => {
+    setTrips(trips.map(trip => {
+      if (trip.id === tripId) {
+        return {
+          ...trip,
+          destinations: trip.destinations.filter(destination => destination.id !== destinationId)
+        };
+      }
+      return trip;
+    }));
   };
 
   return (
@@ -46,58 +54,20 @@ function TripsPage() {
           {trips.map((trip) => (
             <Grid item key={trip.id} xs={12} sm={6} md={4}>
               <Card
-              sx={{
-                backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
-                backdropFilter: 'blur(10px)', // Blur for glass effect
-                borderRadius: '10px', // Rounded corners for the card
-                boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
-                border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
-                color: 'white', // Ensure text is visible on dark background
-              }}
+                sx={{
+                  backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
+                  backdropFilter: 'blur(10px)', // Blur for glass effect
+                  borderRadius: '10px', // Rounded corners for the card
+                  boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
+                  border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
+                  color: 'white', // Ensure text is visible on dark background
+                }}
               >
                 <CardContent>
                   <Typography variant="h5" component="div">
                     {trip.name}
                   </Typography>
-                  <Button
-                    variant="contained"
-                    sx={{ mt: 2,
-                        backgroundColor: 'rgba(32, 33, 33, 0.6)', // Dark transparent background
-                        color: 'white', // White text color for contrast
-                        borderRadius: '8px', // Rounded corners
-                        boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-                        transition: '0.3s ease-in-out', // Smooth transition
-                        '&:hover': {
-                        backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                        },
-                     }}
-                    onClick={() => viewTripDetails(trip.id)}
-                  >
-                    View Details
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    sx={{ mt: 2, 
-                        ml: 2,
-                        backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
-                        color: 'white', // White text color for contrast
-                        borderRadius: '8px', // Rounded corners
-                        boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
-                        transition: '0.3s ease-in-out', // Smooth transition
-                        '&:hover': {
-                        backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
-                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                        },
-                     }}
-                    onClick={() => removeTrip(trip.id)}
-                  >
-                    Remove Trip
-                  </Button>
-                </CardContent>
-                <CardContent>
-                  <Typography variant="h6" component="div">
+                  <Typography variant="h6" component="div" sx={{ mt: 2 }}>
                     Destinations
                   </Typography>
                   {trip.destinations.map((destination) => (
@@ -114,6 +84,44 @@ function TripsPage() {
                       <Typography variant="body2" color="text.white">
                         {destination.description}
                       </Typography>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          mt: 2,
+                          backgroundColor: 'rgba(32, 33, 33, 0.6)', // Dark transparent background
+                          color: 'white', // White text color for contrast
+                          borderRadius: '8px', // Rounded corners
+                          boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+                          transition: '0.3s ease-in-out', // Smooth transition
+                          '&:hover': {
+                            backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                          },
+                        }}
+                        onClick={() => viewTripDetails(trip.id)}
+                      >
+                        View Details
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="error"
+                        sx={{
+                          mt: 2,
+                          ml: 2,
+                          backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                          color: 'white', // White text color for contrast
+                          borderRadius: '8px', // Rounded corners
+                          boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                          transition: '0.3s ease-in-out', // Smooth transition
+                          '&:hover': {
+                            backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                          },
+                        }}
+                        onClick={() => removeDestination(trip.id, destination.id)}
+                      >
+                        Remove
+                      </Button>
                     </Box>
                   ))}
                 </CardContent>
