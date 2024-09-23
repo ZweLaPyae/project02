@@ -1,4 +1,3 @@
-// components/navbar.js
 "use client";
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
@@ -40,7 +39,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="sticky" sx={{  backgroundColor: 'rgba(45, 46, 46, 0.7)',backdropFilter: 'blur(10px)'}}>
+    <AppBar position="sticky" sx={{ backgroundColor: 'rgba(45, 46, 46, 0.7)', backdropFilter: 'blur(10px)' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Link href="/" passHref>
@@ -51,7 +50,7 @@ function ResponsiveAppBar() {
               aria-label="logo"
               sx={{ mr: 2 }}
             >
-              <ModeOfTravelIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize:30, color: "#f3f593"}} />
+              <ModeOfTravelIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1, fontSize: 30, color: "#f3f593" }} />
               <Typography
                 variant="h6"
                 noWrap
@@ -128,7 +127,7 @@ function ResponsiveAppBar() {
                   textDecoration: 'none',
                 }}
               >
-                noe noe travels
+                Havenly Travels
               </Typography>
             </IconButton>
           </Link>
@@ -137,10 +136,10 @@ function ResponsiveAppBar() {
               <Link key={page} href={`/${page.toLowerCase()}`} passHref>
                 <Button
                   onClick={handleCloseNavMenu}
-                  sx={{ 
+                  sx={{
                     my: 2, color: 'white',
-                    fontFamily: 'suse', 
-                    fontSize:15, 
+                    fontFamily: 'suse',
+                    fontSize: 15,
                     display: 'block'
                   }}
                 >
@@ -149,7 +148,35 @@ function ResponsiveAppBar() {
               </Link>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+            <Link href="/signin" passHref>
+              <Button
+                sx={{
+                  my: 2, color: 'white',
+                  fontFamily: 'suse',
+                  fontSize: 15,
+                  display: 'block',
+                  textTransform: 'none',
+                  mr: 2,
+                }}
+              >
+                SIGN IN
+              </Button>
+            </Link>
+            <Link href="/register" passHref>
+              <Button
+                sx={{
+                  my: 2, color: 'white',
+                  fontFamily: 'suse',
+                  fontSize: 15,
+                  display: 'block',
+                  textTransform: 'none',
+                  mr: 2,
+                }}
+              >
+                REGISTER
+              </Button>
+            </Link>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
