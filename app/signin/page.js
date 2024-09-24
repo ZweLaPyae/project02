@@ -1,19 +1,45 @@
-"use client"; // Add this directive at the top
+"use client";
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useForm } from "react-hook-form";
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import Link from 'next/link';
 import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 
-function SignInPage() {
-  const handleSignIn = (event) => {
-    event.preventDefault();
-    // Implement sign-in logic here
-    alert('Sign-In logic goes here');
-  };
+export default function SignInPage() {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL;  // Ensure this points to your backend
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const [serverError, setServerError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  async function loginTraveler(data) {
+    setServerError(null);
+    setSuccessMessage(null);
+    
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {  // Using the login API endpoint
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to log in');
+      }
+
+      setSuccessMessage('Login successful! Redirecting...');
+      // Optionally redirect to another page, like dashboard
+      // router.push("/dashboard");
+    } catch (error) {
+      setServerError(error.message);
+    }
+  }
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
+    <Container maxWidth="sm" sx={{ mt: 8, position: 'relative' }}>
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 4 }}>
         <ModeOfTravelIcon sx={{ fontSize: 30, color: "#f3f593", mr: 1 }} />
         <Link href="/" passHref>
@@ -34,10 +60,12 @@ function SignInPage() {
           </Typography>
         </Link>
       </Box>
+
       <Typography variant="h4" gutterBottom align="center">
         Sign In
       </Typography>
-      <Box component="form" onSubmit={handleSignIn} sx={{ mt: 3 }}>
+
+      <Box component="form" onSubmit={handleSubmit(loginTraveler)} sx={{ mt: 3 }}>
         <TextField
           margin="normal"
           required
@@ -46,7 +74,9 @@ function SignInPage() {
           label="Email Address"
           name="email"
           autoComplete="email"
-          autoFocus
+          {...register("email", { required: 'Email is required' })}
+          error={!!errors.email}
+          helperText={errors.email?.message}
           sx={{
             backgroundColor: 'white',
             borderRadius: 1,
@@ -56,6 +86,7 @@ function SignInPage() {
             },
           }}
         />
+
         <TextField
           margin="normal"
           required
@@ -65,6 +96,9 @@ function SignInPage() {
           type="password"
           id="password"
           autoComplete="current-password"
+          {...register("password", { required: 'Password is required' })}
+          error={!!errors.password}
+          helperText={errors.password?.message}
           sx={{
             backgroundColor: 'white',
             borderRadius: 1,
@@ -74,6 +108,7 @@ function SignInPage() {
             },
           }}
         />
+
         <Button
           type="submit"
           fullWidth
@@ -83,8 +118,18 @@ function SignInPage() {
           Sign In
         </Button>
       </Box>
+
+      {serverError && <Typography color="error">{serverError}</Typography>}
+      {successMessage && <Typography color="success.main">{successMessage}</Typography>}
+
+      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+        Don't have an account?{' '}
+        <Link href="/register" passHref>
+          <Typography component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>
+            Register here
+          </Typography>
+        </Link>
+      </Typography>
     </Container>
   );
 }
-
-export default SignInPage;
