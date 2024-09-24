@@ -20,8 +20,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
     }
 
-    // Return success response (you can return a token or session data if needed)
-    return NextResponse.json({ message: 'Login successful', traveler }, { status: 200 });
+    // Return success response with email
+    return NextResponse.json({ message: 'Login successful', email: traveler.email }, { status: 200 });
 
   } catch (error) {
     console.error('Error during login:', error.message);

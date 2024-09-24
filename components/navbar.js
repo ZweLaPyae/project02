@@ -1,22 +1,26 @@
 "use client";
 import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  Container,
+  Avatar,
+  Button,
+  Tooltip,
+  MenuItem
+} from '@mui/material';
+import {
+  ModeOfTravel as ModeOfTravelIcon,
+  Menu as MenuIcon,
+  Adb as AdbIcon
+} from '@mui/icons-material';
 import Link from 'next/link';  // Import Link from Next.js
 
-const pages = ['Trips', 'Booked', 'Destinations']; // Added 'Destinations' tab
+const pages =  ['Trips', 'Destinations', 'Booked']; // Added 'Destinations' tab
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {
@@ -37,6 +41,9 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  // Check if there are any query parameters in the URL
+  const hasQueryParams = typeof window !== 'undefined' && new URLSearchParams(window.location.search).toString();
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: 'rgba(45, 46, 46, 0.7)', backdropFilter: 'blur(10px)' }}>
@@ -149,39 +156,45 @@ function ResponsiveAppBar() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
-            <Link href="/signin" passHref>
-              <Button
-                sx={{
-                  my: 2, color: 'white',
-                  fontFamily: 'suse',
-                  fontSize: 15,
-                  display: 'block',
-                  textTransform: 'none',
-                  mr: 2,
-                }}
-              >
-                SIGN IN
-              </Button>
-            </Link>
-            <Link href="/register" passHref>
-              <Button
-                sx={{
-                  my: 2, color: 'white',
-                  fontFamily: 'suse',
-                  fontSize: 15,
-                  display: 'block',
-                  textTransform: 'none',
-                  mr: 2,
-                }}
-              >
-                REGISTER
-              </Button>
-            </Link>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            {!hasQueryParams && (
+              <>
+                <Link href="/signin" passHref>
+                  <Button
+                    sx={{
+                      my: 2, color: 'white',
+                      fontFamily: 'suse',
+                      fontSize: 15,
+                      display: 'block',
+                      textTransform: 'none',
+                      mr: 2,
+                    }}
+                  >
+                    SIGN IN
+                  </Button>
+                </Link>
+                <Link href="/register" passHref>
+                  <Button
+                    sx={{
+                      my: 2, color: 'white',
+                      fontFamily: 'suse',
+                      fontSize: 15,
+                      display: 'block',
+                      textTransform: 'none',
+                      mr: 2,
+                    }}
+                  >
+                    REGISTER
+                  </Button>
+                </Link>
+              </>
+            )}
+            {hasQueryParams && (
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+            )}
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"

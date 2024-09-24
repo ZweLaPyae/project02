@@ -17,7 +17,7 @@ export default function SignInPage() {
     setSuccessMessage(null);
     
     try {
-      const response = await fetch(`${API_BASE}/auth/login`, {  // Using the login API endpoint
+      const response = await fetch(`${API_BASE}/signin`, {  // Using the login API endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,9 +30,17 @@ export default function SignInPage() {
         throw new Error(errorData.error || 'Failed to log in');
       }
 
+      const newTraveler = await response.json(); // Get the registered traveler's data
+
       setSuccessMessage('Login successful! Redirecting...');
-      // Optionally redirect to another page, like dashboard
-      // router.push("/dashboard");
+      
+      // Encode data as query parameters
+      const queryParams = new URLSearchParams({
+        email: newTraveler.email,
+      }).toString();
+
+      // Redirect to home page with query parameters
+      window.location.href = `/?${queryParams}`;
     } catch (error) {
       setServerError(error.message);
     }
