@@ -2,13 +2,13 @@ import Travelers from "@/models/Travelers";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
-    try {
-      const travelers = await Travelers.find(); // Fetch all travelers
-      return NextResponse.json(travelers); // Return travelers list
-    } catch (error) {
-      return NextResponse.json({ error: 'Failed to fetch travelers' }, { status: 500 });
-    }
-}  
+  try {
+    const travelers = await Travelers.find(); // Fetch all travelers
+    return NextResponse.json(travelers); // Return travelers list
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to fetch travelers' }, { status: 500 });
+  }
+}
 
 export async function POST(request) {
   try {
@@ -29,10 +29,15 @@ export async function POST(request) {
     // Return the created traveler
     return NextResponse.json(newTraveler, { status: 201 });
   } catch (error) {
+    // Check for duplicate key error (code 11000)
+    if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+      return NextResponse.json({ error: 'Email already exists. Please use a different email.' }, { status: 400 });
+    }
+
     // Log the detailed error message for debugging
     console.error("Error creating traveler:", error.message || error);
-    
-    // Respond with a detailed error message for debugging
+
+    // Return a generic 500 error if any other error occurs
     return NextResponse.json({ error: `Failed to create traveler: ${error.message}` }, { status: 500 });
   }
 }

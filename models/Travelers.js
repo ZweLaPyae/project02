@@ -6,6 +6,9 @@ const travelersSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
+// Ensure indexes are created
+travelersSchema.index({ email: 1 }, { unique: true });
+
 const Travelers = mongoose.models.Travelers || mongoose.model('Travelers', travelersSchema);
 
 export default Travelers;

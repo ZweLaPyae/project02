@@ -9,20 +9,8 @@ import ModeOfTravelIcon from '@mui/icons-material/ModeOfTravel';
 export default function RegisterPage() {
   const API_BASE = process.env.NEXT_PUBLIC_API_URL;
   const { register, handleSubmit, formState: { errors } } = useForm();
-  const [travelers, setTravelers] = useState([]);
   const [serverError, setServerError] = useState(null); // Track server errors
   const [successMessage, setSuccessMessage] = useState(null); // Track success
-
-  async function fetchTravelers() {
-    try {
-      const response = await fetch(`${API_BASE}/travelers`);
-      if (!response.ok) throw new Error('Failed to fetch travelers');
-      const travelers = await response.json();
-      setTravelers(travelers);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   async function createTravelers(data) {
     setServerError(null); // Reset server error
@@ -35,12 +23,19 @@ export default function RegisterPage() {
         },
         body: JSON.stringify(data),
       });
-
-      if (!response.ok) throw new Error('Failed to register traveler'); // Handle error response
-      fetchTravelers();
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to register traveler');
+      }
+  
       setSuccessMessage('Registration successful!'); // Show success message
     } catch (error) {
-      setServerError(error.message); // Display error message
+      if (error.message.includes('duplicate key error')) {
+        setServerError('Email already exists. Please use a different email.');
+      } else {
+        setServerError(error.message); // Display error message
+      }
     }
   }
 
