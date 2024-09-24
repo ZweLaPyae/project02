@@ -16,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import Link from 'next/link';  // Import Link from Next.js
 
-const pages = ['Trips', 'Booked'];
+const pages = ['Trips', 'Booked', 'Destinations']; // Added 'Destinations' tab
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function ResponsiveAppBar() {

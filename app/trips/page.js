@@ -1,48 +1,66 @@
-// app/trips/page.js
 "use client";
 import * as React from 'react';
 import { useRouter } from "next/navigation";
-import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField } from '@mui/material';
+import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField, MenuItem, Select, InputLabel, FormControl, Checkbox, ListItemText, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
 
-const initialCountries = [
-  { name: 'Thailand', image: 'https://media.timeout.com/images/105240236/1024/768/image.webp', description: 'Explore vibrant cities, beaches, and temples.' },
-  { name: 'Japan', image: 'https://www.aptouring.com.au/-/media/apt-responsive-website/asia/hero-panel-12-5/japan-12-5/hc-a-as-japan-miyajima-itsukushima-shrine-floating-torii-gate-at-twilight-347672954-s-12-5.jpg', description: 'Experience the blend of tradition and technology.' },
-  { name: 'Italy', image: '/images/italy.jpg', description: 'Visit historic landmarks and savor Italian cuisine.' },
-  { name: 'Australia', image: '/images/australia.jpg', description: 'Discover unique wildlife and stunning landscapes.' },
-  { name: 'Canada', image: '/images/canada.jpg', description: 'Enjoy breathtaking nature and friendly cities.' },
-  { name: 'Brazil', image: '/images/brazil.jpg', description: 'Dive into a country full of culture and beaches.' },
-  { name: 'New Zealand', image: '/images/newzealand.jpg', description: 'Explore mountains, lakes, and Maori culture.' },
-  { name: 'France', image: '/images/france.jpg', description: 'Indulge in art, fashion, and fine dining.' },
-  { name: 'Greece', image: '/images/greece.jpg', description: 'Unwind on beautiful islands and explore ancient ruins.' },
-  { name: 'Egypt', image: '/images/egypt.jpg', description: 'Marvel at pyramids, history, and deserts.' },
-  { name: 'South Africa', image: '/images/southafrica.jpg', description: 'Experience safari adventures and diverse culture.' },
-  { name: 'Iceland', image: '/images/iceland.jpg', description: 'Witness glaciers, waterfalls, and the Northern Lights.' },
+const initialTrips = [
+  { name: 'Thailand Adventure', country: 'Thailand', destinations: ['Bangkok', 'Phuket'], additionalPrice: 200, description: 'Explore vibrant cities and beaches.', image: 'https://media.timeout.com/images/105240236/1024/768/image.webp' },
+  // Add more initial trips if needed
 ];
 
 function Trips() {
   const router = useRouter();
-  const [countries, setCountries] = React.useState(initialCountries);
-  const [newCountry, setNewCountry] = React.useState({ name: '', image: '', description: '' });
+  const [trips, setTrips] = React.useState(initialTrips);
+  const [newTrip, setNewTrip] = React.useState({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
+  const [destinations, setDestinations] = React.useState([]);
+  const [open, setOpen] = React.useState(false);
 
-  const handleAddCountry = (e) => {
+  React.useEffect(() => {
+    // Fetch destinations from MongoDB
+    fetch('/api/destinations')
+      .then(response => response.json())
+      .then(data => {
+        setDestinations(data);
+      })
+      .catch(error => {
+        console.error('Error fetching destinations:', error);
+      });
+  }, []);
+
+
+  const handleAddTrip = (e) => {
     e.preventDefault();
-    setCountries([...countries, newCountry]);
-    setNewCountry({ name: '', image: '', description: '' });
+    setTrips([...trips, newTrip]);
+    setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
+    setOpen(false); // Close the modal after adding the trip
   };
 
-  const handleDeleteCountry = (index) => {
-    const updatedCountries = countries.filter((_, i) => i !== index);
-    setCountries(updatedCountries);
+  const handleDeleteTrip = (index) => {
+    const updatedTrips = trips.filter((_, i) => i !== index);
+    setTrips(updatedTrips);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewCountry({ ...newCountry, [name]: value });
+    setNewTrip({ ...newTrip, [name]: value });
   };
 
-  const handleCardClick = (countryName) => {
-    router.push(`/destinations?country=${countryName}`);
+  const handleDestinationsChange = (e) => {
+    const { value } = e.target;
+    setNewTrip({ ...newTrip, destinations: value });
+  };
+
+  const handleCardClick = (tripName) => {
+    router.push(`/tripdetails?trip=${tripName}`);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -50,110 +68,93 @@ function Trips() {
       <ResponsiveAppBar /> {/* Add the navigation bar */}
       <Container sx={{ py: 8 }}>
         <Typography variant="h4" gutterBottom align="center">
-          Top 10 Countries to Visit
+          Trip Packages
         </Typography>
-        <Box component="form" onSubmit={handleAddCountry} sx={{ 
-          mb: 4, 
-          backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
-          backdropFilter: 'blur(10px)', // Blur for glass effect
-          borderRadius: '10px', // Rounded corners for the card
-          boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
-          border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
-          color: 'white', // Ensure text is visible on dark background 
-          p: 2, 
-          borderRadius: 1 }}>
-          <TextField
-            label="Country Name"
-            name="name"
-            value={newCountry.name}
-            onChange={handleChange}
-            required
-            sx={{
-              mr: 2,
-              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
-              borderRadius: '5px',
-              input: {
-                color: 'white', // Text color
-              },
-              label: {
-                color: 'white', // Label color
-              },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white', // Border color
-                },
-                '&:hover fieldset': {
-                  borderColor: 'white', // Border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Border color when focused
-                },
-              },
-            }}
-          
-          />
-          <TextField
-            label="Image URL"
-            name="image"
-            value={newCountry.image}
-            onChange={handleChange}
-            required
-            sx={{
-              mr: 2,
-              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
-              borderRadius: '5px',
-              input: {
-                color: 'white', // Text color
-              },
-              label: {
-                color: 'white', // Label color
-              },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white', // Border color
-                },
-                '&:hover fieldset': {
-                  borderColor: 'white', // Border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Border color when focused
-                },
-              },
-            }}
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={newCountry.description}
-            onChange={handleChange}
-            required
-            sx={{
-              mr: 2,
-              backgroundColor: 'rgba(255, 255, 255, 0.2)', // Transparent white background
-              borderRadius: '5px',
-              input: {
-                color: 'white', // Text color
-              },
-              label: {
-                color: 'white', // Label color
-              },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white', // Border color
-                },
-                '&:hover fieldset': {
-                  borderColor: 'white', // Border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Border color when focused
-                },
-              },
-            }}
-          />
-          <Button type="submit" variant="contained">Add Country</Button>
-        </Box>
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+          Add Trip
+        </Button>
+        <Dialog open={open} onClose={handleClose}>
+          <DialogTitle>Add a New Trip</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please fill out the form below to add a new trip package.
+            </DialogContentText>
+            <Box component="form" onSubmit={handleAddTrip} sx={{ mt: 2 }}>
+              <TextField
+                label="Trip Name"
+                name="name"
+                value={newTrip.name}
+                onChange={handleChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Country Name"
+                name="country"
+                value={newTrip.country}
+                onChange={handleChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Destinations</InputLabel>
+                <Select
+                  multiple
+                  value={newTrip.destinations}
+                  onChange={handleDestinationsChange}
+                  renderValue={(selected) => selected.join(', ')}
+                >
+                  {destinations.map((destination) => (
+                    <MenuItem key={destination} value={destination}>
+                      <Checkbox checked={newTrip.destinations.indexOf(destination) > -1} />
+                      <ListItemText primary={destination} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <TextField
+                label="Additional Price"
+                name="additionalPrice"
+                value={newTrip.additionalPrice}
+                onChange={handleChange}
+                required
+                type="number"
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Description"
+                name="description"
+                value={newTrip.description}
+                onChange={handleChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Image URL"
+                name="image"
+                value={newTrip.image}
+                onChange={handleChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button type="submit" color="primary">
+                  Add Trip
+                </Button>
+              </DialogActions>
+            </Box>
+          </DialogContent>
+        </Dialog>
         <Grid container spacing={4}>
-          {countries.map((country, index) => (
+          {trips.map((trip, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
               <Card 
                sx={{
@@ -169,24 +170,30 @@ function Trips() {
                 transform: 'scale(1.05)', // Slightly enlarge the card on hover
                 }
               }}
-              onClick={() => handleCardClick(country.name)}>
+              onClick={() => handleCardClick(trip.name)}>
                 <CardMedia
                   component="img"
                   sx={{ width: '100%', 
                     height: 200, 
                     objectFit: 'cover'
                    }} // Set fixed size and object fit
-                  image={country.image}
-                  alt={country.name}
+                  image={trip.image}
+                  alt={trip.name}
                 />
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    {country.name}
+                    {trip.name}
                   </Typography>
                   <Typography variant="body2" color="white">
-                    {country.description}
+                    {trip.description}
                   </Typography>
-                  <Button variant="contained" color="primary" onClick={(e) => { e.stopPropagation(); handleDeleteCountry(index); }}>
+                  <Typography variant="body2" color="white">
+                    Destinations: {trip.destinations.join(', ')}
+                  </Typography>
+                  <Typography variant="body2" color="white">
+                    Additional Price: ${trip.additionalPrice}
+                  </Typography>
+                  <Button variant="contained" color="primary" onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
                     Delete
                   </Button>
                 </CardContent>
