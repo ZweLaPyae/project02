@@ -4,19 +4,24 @@ import { useRouter } from "next/navigation";
 import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField, MenuItem, Select, InputLabel, FormControl, Checkbox, ListItemText, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
 
-const initialTrips = [
-  { name: 'Thailand Adventure', country: 'Thailand', destinations: ['Bangkok', 'Phuket'], additionalPrice: 200, description: 'Explore vibrant cities and beaches.', image: 'https://media.timeout.com/images/105240236/1024/768/image.webp' },
-  // Add more initial trips if needed
-];
-
 function Trips() {
   const router = useRouter();
-  const [trips, setTrips] = React.useState(initialTrips);
+  const [trips, setTrips] = React.useState([]);
   const [newTrip, setNewTrip] = React.useState({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
   const [destinations, setDestinations] = React.useState([]);
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
+    // Fetch trips from MongoDB
+    fetch('/api/trip')
+      .then(response => response.json())
+      .then(data => {
+        setTrips(data);
+      })
+      .catch(error => {
+        console.error('Error fetching trips:', error);
+      });
+
     // Fetch destinations from MongoDB
     fetch('/api/destinations')
       .then(response => response.json())
@@ -28,17 +33,49 @@ function Trips() {
       });
   }, []);
 
-
-  const handleAddTrip = (e) => {
+  const handleAddTrip = async (e) => {
     e.preventDefault();
-    setTrips([...trips, newTrip]);
-    setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
-    setOpen(false); // Close the modal after adding the trip
+    try {
+      const response = await fetch('/api/trip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTrip),
+      });
+
+      if (response.ok) {
+        const addedTrip = await response.json();
+        setTrips([...trips, addedTrip]);
+        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
+        setOpen(false); // Close the modal after adding the trip
+      } else {
+        console.error('Failed to add trip');
+      }
+    } catch (error) {
+      console.error('Error adding trip:', error);
+    }
   };
 
-  const handleDeleteTrip = (index) => {
-    const updatedTrips = trips.filter((_, i) => i !== index);
-    setTrips(updatedTrips);
+  const handleDeleteTrip = async (index) => {
+    const tripToDelete = trips[index];
+    try {
+      const response = await fetch('/api/trip', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: tripToDelete.name }),
+      });
+
+      if (response.ok) {
+        setTrips(trips.filter((_, i) => i !== index));
+      } else {
+        console.error('Failed to delete trip');
+      }
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+    }
   };
 
   const handleChange = (e) => {

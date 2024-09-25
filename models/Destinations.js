@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const destinationsSchema = new mongoose.Schema({
+    countryName: { type: String, required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true },
     description: { type: String, required: true },

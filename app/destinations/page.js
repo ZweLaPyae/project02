@@ -3,29 +3,30 @@ import * as React from 'react';
 import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
 
-const initialDestinationsData = {
-  thailand: [
-    { name: 'Bangkok', image: 'https://www.vietnamstay.com/DataUpload/Attractions/201932822432-bangkok-overview-aerial-view-2.jpg', description: 'Vibrant city with temples and street food.', accommodations: 120 },
-    { name: 'Chiang Mai', image: 'https://static.independent.co.uk/2024/02/09/16/newFile.jpg', description: 'Mountain city with historical landmarks.', accommodations: 60 },
-    { name: 'Phuket', image: 'https://www.travelandleisure.com/thmb/RQ3JmT8V2y2fhwr7NY0cgUumcCE=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/phuket-thailand-karst-formation-phuket0327-92bd3ce9266148dba74cba5e36c711e2.jpg', description: 'Popular beach destination.', accommodations: 90 },
-  ],
-  japan: [
-    { name: 'Tokyo', image: 'https://example.com/tokyo.jpg', description: 'High-tech city with rich culture.', accommodations: 200 },
-    { name: 'Kyoto', image: 'https://example.com/kyoto.jpg', description: 'Historic city with temples and gardens.', accommodations: 80 },
-    { name: 'Osaka', image: 'https://example.com/osaka.jpg', description: 'Food capital of Japan.', accommodations: 150 },
-  ],
-  italy: [
-    { name: 'Rome', image: 'https://example.com/rome.jpg', description: 'The capital with ancient ruins.', accommodations: 180 },
-    { name: 'Venice', image: 'https://example.com/venice.jpg', description: 'Famous for canals and gondolas.', accommodations: 70 },
-    { name: 'Florence', image: 'https://example.com/florence.jpg', description: 'Home of Renaissance art and architecture.', accommodations: 100 },
-  ],
-  // Add more countries and destinations similarly...
-};
-
 function Destinations() {
-  const [destinationsData, setDestinationsData] = React.useState(initialDestinationsData);
+  const [destinationsData, setDestinationsData] = React.useState({});
   const [open, setOpen] = React.useState(false);
-  const [newDestination, setNewDestination] = React.useState({ country: '', name: '', image: '', description: '', accommodations: '' });
+  const [newDestination, setNewDestination] = React.useState({ country: '', name: '', price: '', description: '', mediaUrl: '' });
+
+  React.useEffect(() => {
+    // Fetch destinations from the API
+    fetch('/api/destinations')
+      .then(response => response.json())
+      .then(data => {
+        const formattedData = data.reduce((acc, destination) => {
+          const countryKey = destination.country.toLowerCase();
+          if (!acc[countryKey]) {
+            acc[countryKey] = [];
+          }
+          acc[countryKey].push(destination);
+          return acc;
+        }, {});
+        setDestinationsData(formattedData);
+      })
+      .catch(error => {
+        console.error('Error fetching destinations:', error);
+      });
+  }, []);
 
   const handleAddClick = (destinationName) => {
     // Implement add functionality (e.g., add to wishlist, cart, or bookings)
@@ -45,17 +46,41 @@ function Destinations() {
     setNewDestination({ ...newDestination, [name]: value });
   };
 
-  const handleAddDestination = (e) => {
+  const handleAddDestination = async (e) => {
     e.preventDefault();
-    const updatedDestinations = { ...destinationsData };
-    const countryKey = newDestination.country.toLowerCase();
-    if (!updatedDestinations[countryKey]) {
-      updatedDestinations[countryKey] = [];
+    try {
+      const response = await fetch('/api/destinations/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newDestination),
+      });
+  
+      if (response.ok) {
+        const addedDestination = await response.json();
+        const countryName = addedDestination.countryName.toLowerCase();
+  
+        // Fetch updated destinations for the specific country
+        const updatedResponse = await fetch(`/api/destinations/${countryName}`);
+        if (updatedResponse.ok) {
+          const updatedDestinations = await updatedResponse.json();
+          setDestinationsData(prevData => ({
+            ...prevData,
+            [countryName]: updatedDestinations,
+          }));
+        } else {
+          console.error('Failed to fetch updated destinations');
+        }
+  
+        setNewDestination({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
+        setOpen(false);
+      } else {
+        console.error('Failed to add destination');
+      }
+    } catch (error) {
+      console.error('Error adding destination:', error);
     }
-    updatedDestinations[countryKey].push(newDestination);
-    setDestinationsData(updatedDestinations);
-    setNewDestination({ country: '', name: '', image: '', description: '', accommodations: '' });
-    setOpen(false);
   };
 
   return (
@@ -78,7 +103,7 @@ function Destinations() {
               <TextField
                 label="Country Name"
                 name="country"
-                value={newDestination.country}
+                value={newDestination.countryName}
                 onChange={handleChange}
                 required
                 fullWidth
@@ -95,8 +120,8 @@ function Destinations() {
               />
               <TextField
                 label="Image URL"
-                name="image"
-                value={newDestination.image}
+                name="mediaUrl"
+                value={newDestination.mediaUrl}
                 onChange={handleChange}
                 required
                 fullWidth
@@ -112,9 +137,9 @@ function Destinations() {
                 sx={{ mb: 2 }}
               />
               <TextField
-                label="Accommodations"
-                name="accommodations"
-                value={newDestination.accommodations}
+                label="Price"
+                name="price"
+                value={newDestination.price}
                 onChange={handleChange}
                 required
                 type="number"
