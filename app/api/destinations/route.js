@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 
 export async function GET(request) {
+  await dbConnect();
   try {
     const destinations = await Destinations.find(); // Fetch all destinations
     return NextResponse.json(destinations); // Return destinations list
@@ -12,7 +13,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-    await dbConnect();
+  await dbConnect();
   try {
     const body = await request.json(); // Parse request body
 
@@ -20,7 +21,6 @@ export async function POST(request) {
     const { countryName, name, price, description, mediaUrl } = body;
     if (!countryName || !name || !price || !description || !mediaUrl) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-      
     }
 
     // Create a new destination document
@@ -34,8 +34,32 @@ export async function POST(request) {
   } catch (error) {
     // Log the detailed error message for debugging
     console.error("Error creating destination:", error.message || error);
-    
+
     // Respond with a detailed error message for debugging
     return NextResponse.json({ error: `Failed to create destination: ${error.message}` }, { status: 500 });
   }
 }
+export async function DELETE(request) {
+  await dbConnect();
+  try {
+    const { id } = await request.json(); // Parse request body to get the id
+
+    // Validate required fields
+    if (!id) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Delete the destination document
+    await Destinations.findByIdAndDelete(id);
+
+    // Return success message
+    return NextResponse.json({ message: 'Destination deleted successfully' }, { status: 200 });
+  } catch (error) {
+    // Log the detailed error message for debugging
+    console.error("Error deleting destination:", error.message || error);
+
+    // Respond with a detailed error message for debugging
+    return NextResponse.json({ error: `Failed to delete destination: ${error.message}` }, { status: 500 });
+  }
+}
+ 

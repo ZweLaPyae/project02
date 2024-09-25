@@ -7,8 +7,9 @@ import ResponsiveAppBar from '../../components/navbar'; // Adjust the import pat
 function Trips() {
   const router = useRouter();
   const [trips, setTrips] = React.useState([]);
-  const [newTrip, setNewTrip] = React.useState({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
+  const [newTrip, setNewTrip] = React.useState({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
   const [destinations, setDestinations] = React.useState([]);
+  const [filteredDestinations, setFilteredDestinations] = React.useState([]);
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -43,11 +44,11 @@ function Trips() {
         },
         body: JSON.stringify(newTrip),
       });
-
+  
       if (response.ok) {
         const addedTrip = await response.json();
         setTrips([...trips, addedTrip]);
-        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', image: '' });
+        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl : '' });
         setOpen(false); // Close the modal after adding the trip
       } else {
         console.error('Failed to add trip');
@@ -81,11 +82,19 @@ function Trips() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewTrip({ ...newTrip, [name]: value });
+
+    if (name === 'country') {
+      // Filter destinations based on the typed country
+      const filtered = destinations.filter(destination => destination.countryName.toLowerCase().includes(value.toLowerCase()));
+      setFilteredDestinations(filtered);
+    }
   };
 
   const handleDestinationsChange = (e) => {
     const { value } = e.target;
-    setNewTrip({ ...newTrip, destinations: value });
+    setNewTrip({ ...newTrip, destinations: value.map(destinationName => {
+      return destinations.find(destination => destination.name === destinationName);
+    }) });
   };
 
   const handleCardClick = (tripName) => {
@@ -139,14 +148,14 @@ function Trips() {
                 <InputLabel>Destinations</InputLabel>
                 <Select
                   multiple
-                  value={newTrip.destinations}
+                  value={newTrip.destinations.map(destination => destination.name)}
                   onChange={handleDestinationsChange}
                   renderValue={(selected) => selected.join(', ')}
                 >
-                  {destinations.map((destination) => (
-                    <MenuItem key={destination} value={destination}>
-                      <Checkbox checked={newTrip.destinations.indexOf(destination) > -1} />
-                      <ListItemText primary={destination} />
+                  {filteredDestinations.map((destination) => (
+                    <MenuItem key={destination._id} value={destination.name}>
+                      <Checkbox checked={newTrip.destinations.some(dest => dest.name === destination.name)} />
+                      <ListItemText primary={destination.name} />
                     </MenuItem>
                   ))}
                 </Select>
@@ -172,8 +181,8 @@ function Trips() {
               />
               <TextField
                 label="Image URL"
-                name="image"
-                value={newTrip.image}
+                name="imageUrl"
+                value={newTrip.imageUrl}
                 onChange={handleChange}
                 required
                 fullWidth
@@ -214,7 +223,7 @@ function Trips() {
                     height: 200, 
                     objectFit: 'cover'
                    }} // Set fixed size and object fit
-                  image={trip.image}
+                  image={trip.imageUrl}
                   alt={trip.name}
                 />
                 <CardContent>
@@ -225,7 +234,7 @@ function Trips() {
                     {trip.description}
                   </Typography>
                   <Typography variant="body2" color="white">
-                    Destinations: {trip.destinations.join(', ')}
+                    Destinations: {trip.destinations.map(dest => dest.name).join(', ')}
                   </Typography>
                   <Typography variant="body2" color="white">
                     Additional Price: ${trip.additionalPrice}

@@ -4,33 +4,41 @@ import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button,
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
 
 function Destinations() {
-  const [destinationsData, setDestinationsData] = React.useState({});
+  const [destinationsData, setDestinationsData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
-  const [newDestination, setNewDestination] = React.useState({ country: '', name: '', price: '', description: '', mediaUrl: '' });
+  const [newDestination, setNewDestination] = React.useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
 
   React.useEffect(() => {
     // Fetch destinations from the API
     fetch('/api/destinations')
       .then(response => response.json())
       .then(data => {
-        const formattedData = data.reduce((acc, destination) => {
-          const countryKey = destination.country.toLowerCase();
-          if (!acc[countryKey]) {
-            acc[countryKey] = [];
-          }
-          acc[countryKey].push(destination);
-          return acc;
-        }, {});
-        setDestinationsData(formattedData);
+        setDestinationsData(data);
       })
       .catch(error => {
         console.error('Error fetching destinations:', error);
       });
   }, []);
 
-  const handleAddClick = (destinationName) => {
-    // Implement add functionality (e.g., add to wishlist, cart, or bookings)
-    alert(`${destinationName} added to your list!`);
+  const handleDeleteClick = async (id) => {
+    try {
+      const response = await fetch('/api/destinations', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (response.ok) {
+        // Remove the deleted destination from the state
+        setDestinationsData(prevData => prevData.filter(destination => destination._id !== id));
+      } else {
+        console.error('Failed to delete destination');
+      }
+    } catch (error) {
+      console.error('Error deleting destination:', error);
+    }
   };
 
   const handleClickOpen = () => {
@@ -56,23 +64,19 @@ function Destinations() {
         },
         body: JSON.stringify(newDestination),
       });
-  
+
       if (response.ok) {
         const addedDestination = await response.json();
-        const countryName = addedDestination.countryName.toLowerCase();
-  
-        // Fetch updated destinations for the specific country
-        const updatedResponse = await fetch(`/api/destinations/${countryName}`);
+
+        // Fetch updated destinations
+        const updatedResponse = await fetch('/api/destinations');
         if (updatedResponse.ok) {
           const updatedDestinations = await updatedResponse.json();
-          setDestinationsData(prevData => ({
-            ...prevData,
-            [countryName]: updatedDestinations,
-          }));
+          setDestinationsData(updatedDestinations);
         } else {
           console.error('Failed to fetch updated destinations');
         }
-  
+
         setNewDestination({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
         setOpen(false);
       } else {
@@ -102,7 +106,7 @@ function Destinations() {
             <Box component="form" onSubmit={handleAddDestination} sx={{ mt: 2 }}>
               <TextField
                 label="Country Name"
-                name="country"
+                name="countryName"
                 value={newDestination.countryName}
                 onChange={handleChange}
                 required
@@ -157,59 +161,63 @@ function Destinations() {
             </Box>
           </DialogContent>
         </Dialog>
-        {Object.keys(destinationsData).map((countryKey) => (
-          <Box key={countryKey} sx={{ mb: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              {countryKey.charAt(0).toUpperCase() + countryKey.slice(1)}
-            </Typography>
-            <Grid container spacing={4}>
-              {destinationsData[countryKey].map((destination, index) => (
-                <Grid item key={index} xs={12} sm={6} md={4}>
-                  <Card
+        <Grid marginTop={5} container spacing={4}>
+          {destinationsData.map((destination, index) => (
+            <Grid item key={index} xs={12} sm={6} md={4}>
+              <Card
+                sx={{
+                  backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
+                  backdropFilter: 'blur(10px)', // Blur for glass effect
+                  borderRadius: '10px', // Rounded corners for the card
+                  boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
+                  border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
+                  color: 'white', // Ensure text is visible on dark background
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  sx={{ width: '100%', height: 200, objectFit: 'cover' }}
+                  image={destination.mediaUrl}
+                  alt={destination.name}
+                />
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {destination.name}
+                  </Typography>
+                  <Typography variant="body2" color="white" gutterBottom>
+                    {destination.countryName}
+                  </Typography>
+                  <Typography variant="body2" color="white" gutterBottom>
+                    {destination.description}
+                  </Typography>
+                  <Typography variant="body2" color="gray">
+                    {destination.price} THB
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="secondary"
                     sx={{
-                      backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
-                      backdropFilter: 'blur(10px)', // Blur for glass effect
-                      borderRadius: '10px', // Rounded corners for the card
-                      boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
-                      border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
-                      color: 'white', // Ensure text is visible on dark background
-                      transition: '0.3s', // Smooth transition for the hover effect
+                      mt: 2,
+
+                      backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                      color: 'white', // White text color for contrast
+                      borderRadius: '8px', // Rounded corners
+                      boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                      transition: '0.3s ease-in-out', // Smooth transition
                       '&:hover': {
-                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.7)', // Glow effect on hover
-                        transform: 'scale(1.05)', // Slightly enlarge the card on hover
+                        backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
                       },
                     }}
+                    onClick={() => handleDeleteClick(destination._id)}
                   >
-                    <CardMedia
-                      component="img"
-                      sx={{ width: '100%', height: 200, objectFit: 'cover' }}
-                      image={destination.image}
-                      alt={destination.name}
-                    />
-                    <CardContent>
-                      <Typography variant="h5" component="div">
-                        {destination.name}
-                      </Typography>
-                      <Typography variant="body2" color="white" gutterBottom>
-                        {destination.description}
-                      </Typography>
-                      <Typography variant="body2" color="gray">
-                        {destination.accommodations} accommodations available
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        sx={{ mt: 2 }}
-                        onClick={() => handleAddClick(destination.name)}
-                      >
-                        Add
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+                    Delete
+                  </Button>
+                </CardContent>
+              </Card>
             </Grid>
-          </Box>
-        ))}
+          ))}
+        </Grid>
       </Container>
     </>
   );
