@@ -1,32 +1,36 @@
 "use client";
 import * as React from 'react';
 import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  Container,
-  Avatar,
-  Button,
-  Tooltip,
-  MenuItem
+  AppBar, Avatar, Box, Button, Container,
+  IconButton, Menu, MenuItem,
+  Toolbar, Tooltip, Typography
 } from '@mui/material';
 import {
-  ModeOfTravel as ModeOfTravelIcon,
+  Adb as AdbIcon,
   Menu as MenuIcon,
-  Adb as AdbIcon
+  ModeOfTravel as ModeOfTravelIcon
 } from '@mui/icons-material';
 import Link from 'next/link';  // Import Link from Next.js
+import Cookies from 'js-cookie';  // Import js-cookie
 
-const pages =  ['Trips', 'Destinations', 'Booked']; // Added 'Destinations' tab
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['Trips', 'Destinations']; // Removed 'Booked' from the main pages array
+const settings = ['Profile', 'Sign Out'];
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [travelerSession, setTravelerSession] = React.useState(null);
 
+  React.useEffect(() => {
+    const cookies = document.cookie.split('; ').reduce((prev, current) => {
+      const [name, ...rest] = current.split('=');
+      prev[name] = decodeURIComponent(rest.join('='));
+      return prev;
+    }, {});
+
+    setTravelerSession(cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null);
+  }, []);
+  
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -42,8 +46,11 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  // Check if there are any query parameters in the URL
-  const hasQueryParams = typeof window !== 'undefined' && new URLSearchParams(window.location.search).toString();
+  const handleLogout = () => {
+    Cookies.remove('traveler_session');  // Remove the session cookie
+    setTravelerSession(null);  // Update the state
+    window.location.href = `/`;  // Redirect to the home page
+  };
 
   return (
     <AppBar position="sticky" sx={{ backgroundColor: 'rgba(45, 46, 46, 0.7)', backdropFilter: 'blur(10px)' }}>
@@ -110,6 +117,13 @@ function ResponsiveAppBar() {
                   </Link>
                 </MenuItem>
               ))}
+              {travelerSession && (
+                <MenuItem onClick={handleCloseNavMenu}>
+                  <Link href="/booked" passHref>
+                    <Typography textAlign="center">Booked</Typography>
+                  </Link>
+                </MenuItem>
+              )}
             </Menu>
           </Box>
           <Link href="/" passHref>
@@ -156,7 +170,7 @@ function ResponsiveAppBar() {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
-            {!hasQueryParams && (
+            {!travelerSession ? (
               <>
                 <Link href="/signin" passHref>
                   <Button
@@ -187,13 +201,29 @@ function ResponsiveAppBar() {
                   </Button>
                 </Link>
               </>
-            )}
-            {hasQueryParams && (
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
+            ) : (
+              <>
+                <Link href="/booked" passHref>
+                  <Button
+                    sx={{
+                      my: 2, color: 'white',
+                      fontFamily: 'suse',
+                      fontSize: 15,
+                      display: 'block',
+                      textTransform: 'none',
+                      ml: 2,
+                      mr: 2,
+                    }}
+                  >
+                    Booked
+                  </Button>
+                </Link>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                  </IconButton>
+                </Tooltip>
+              </>
             )}
             <Menu
               sx={{ mt: '45px' }}
@@ -212,8 +242,14 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}>
+                  {setting === 'Profile' ? (
+                    <Link href="/profile" passHref>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </Link>
+                  ) : (
+                    <Typography textAlign="center">{setting}</Typography>
+                  )}
                 </MenuItem>
               ))}
             </Menu>

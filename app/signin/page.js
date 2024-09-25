@@ -27,20 +27,15 @@ export default function SignInPage() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to log in');
+        throw new Error(errorData.error || 'Failed to sign in');
       }
 
-      const newTraveler = await response.json(); // Get the registered traveler's data
+      const oldTraveler = await response.json(); // Get the registered traveler's data
 
       setSuccessMessage('Login successful! Redirecting...');
-      
-      // Encode data as query parameters
-      const queryParams = new URLSearchParams({
-        email: newTraveler.email,
-      }).toString();
 
       // Redirect to home page with query parameters
-      window.location.href = `/?${queryParams}`;
+      window.location.href = `/`;
     } catch (error) {
       setServerError(error.message);
     }

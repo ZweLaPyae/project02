@@ -15,14 +15,19 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Email not found' }, { status: 404 });
     }
 
-    // Compare the provided password with the stored plain-text password (Insecure)
+    // Compare the provided password with the stored plain-text password
     if (password !== traveler.password) {
       return NextResponse.json({ error: 'Incorrect password' }, { status: 401 });
     }
 
-    // Return success response with email
-    return NextResponse.json({ message: 'Login successful', email: traveler.email }, { status: 200 });
-
+     // Set a session cookie for the traveler
+     const response = NextResponse.json({ message: 'Login successful', email: traveler.email });
+     response.cookies.set('traveler_session', JSON.stringify({ email: traveler.email }), {
+       maxAge: 60 * 60 * 24, // Set expiration (e.g., 1 day)
+       path: '/', // Available to all pages
+     });
+ 
+     return response;
   } catch (error) {
     console.error('Error during login:', error.message);
     return NextResponse.json({ error: 'Failed to login' }, { status: 500 });
