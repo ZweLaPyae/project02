@@ -67,3 +67,36 @@ export async function DELETE(request) {
     return NextResponse.json({ error: `Failed to delete trip: ${error.message}` }, { status: 500 });
   }
 }
+
+export async function PUT(request) {
+  await dbConnect();
+  try {
+    const body = await request.json(); // Parse request body
+    const { name, country, destinations, additionalPrice, description, imageUrl } = body;
+
+    // Validate required fields
+    if (!name || !country || !destinations || !additionalPrice || !description || !imageUrl) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Find the trip by name and update it
+    const updatedTrip = await Trips.findOneAndUpdate(
+      { name },
+      { country, destinations, additionalPrice, description, imageUrl },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedTrip) {
+      return NextResponse.json({ error: 'Trip not found' }, { status: 404 });
+    }
+
+    // Return the updated trip
+    return NextResponse.json(updatedTrip, { status: 200 });
+  } catch (error) {
+    // Log the detailed error message for debugging
+    console.error("Error updating trip:", error.message || error);
+
+    // Respond with a detailed error message for debugging
+    return NextResponse.json({ error: `Failed to update trip: ${error.message}` }, { status: 500 });
+  }
+}
