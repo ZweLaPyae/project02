@@ -5,7 +5,7 @@ import dbConnect from "@/lib/db";
 export async function GET(request) {
   await dbConnect();
   try {
-    const trips = await Trips.find(); // Fetch all trips
+    const trips = await Trips.find(); // No need to populate
     return NextResponse.json(trips); // Return trips list
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch trips' }, { status: 500 });
@@ -16,7 +16,7 @@ export async function POST(request) {
   await dbConnect();
   try {
     const body = await request.json(); 
-    console.log(body);// Parse request body
+    console.log(body); // Parse request body
 
     // Validate required fields
     const { name, country, destinations, additionalPrice, description, imageUrl } = body;
@@ -44,14 +44,14 @@ export async function POST(request) {
 export async function DELETE(request) {
   await dbConnect();
   try {
-    const { name } = await request.json(); // Parse request body to get the trip ID
+    const { name } = await request.json(); // Parse request body to get the trip name
 
     if (!name) {
-      return NextResponse.json({ error: 'Missing trip' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing trip name' }, { status: 400 });
     }
 
-    // Find the trip by ID and delete it
-    const deletedTrip = await Trips.findByIdAndDelete(name);
+    // Find the trip by name and delete it
+    const deletedTrip = await Trips.findOneAndDelete({ name });
 
     if (!deletedTrip) {
       return NextResponse.json({ error: 'Trip not found' }, { status: 404 });

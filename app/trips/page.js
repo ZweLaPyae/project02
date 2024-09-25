@@ -17,6 +17,7 @@ function Trips() {
     fetch('/api/trip')
       .then(response => response.json())
       .then(data => {
+        console.log('Fetched trips:', data); // Log fetched trips
         setTrips(data);
       })
       .catch(error => {
@@ -34,6 +35,13 @@ function Trips() {
       });
   }, []);
 
+  React.useEffect(() => {
+    console.log('Trips:', trips);
+    trips.forEach(trip => {
+      console.log(`Destinations for trip ${trip.name}:`, trip.destinations);
+    });
+  }, [trips]);
+
   const handleAddTrip = async (e) => {
     e.preventDefault();
     try {
@@ -44,11 +52,11 @@ function Trips() {
         },
         body: JSON.stringify(newTrip),
       });
-  
+
       if (response.ok) {
         const addedTrip = await response.json();
         setTrips([...trips, addedTrip]);
-        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl : '' });
+        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
         setOpen(false); // Close the modal after adding the trip
       } else {
         console.error('Failed to add trip');
@@ -85,16 +93,18 @@ function Trips() {
 
     if (name === 'country') {
       // Filter destinations based on the typed country
-      const filtered = destinations.filter(destination => destination.countryName.toLowerCase().includes(value.toLowerCase()));
+      const filtered = destinations.filter(destination =>
+        destination.countryName && destination.countryName.toLowerCase().includes(value.toLowerCase())
+      );
       setFilteredDestinations(filtered);
     }
   };
 
   const handleDestinationsChange = (e) => {
     const { value } = e.target;
-    setNewTrip({ ...newTrip, destinations: value.map(destinationName => {
-      return destinations.find(destination => destination.name === destinationName);
-    }) });
+    setNewTrip({
+      ...newTrip, destinations: value
+    });
   };
 
   const handleCardClick = (tripName) => {
@@ -148,13 +158,13 @@ function Trips() {
                 <InputLabel>Destinations</InputLabel>
                 <Select
                   multiple
-                  value={newTrip.destinations.map(destination => destination.name)}
+                  value={newTrip.destinations}
                   onChange={handleDestinationsChange}
                   renderValue={(selected) => selected.join(', ')}
                 >
                   {filteredDestinations.map((destination) => (
                     <MenuItem key={destination._id} value={destination.name}>
-                      <Checkbox checked={newTrip.destinations.some(dest => dest.name === destination.name)} />
+                      <Checkbox checked={newTrip.destinations.includes(destination.name)} />
                       <ListItemText primary={destination.name} />
                     </MenuItem>
                   ))}
@@ -202,27 +212,28 @@ function Trips() {
         <Grid container spacing={4}>
           {trips.map((trip, index) => (
             <Grid item key={index} xs={12} sm={6} md={4}>
-              <Card 
-               sx={{
-                backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
-                backdropFilter: 'blur(10px)', // Blur for glass effect
-                borderRadius: '10px', // Rounded corners for the card
-                boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
-                border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
-                color: 'white', // Ensure text is visible on dark background
-                transition: '0.3s', // Smooth transition for the hover effect
-                '&:hover': {
-                boxShadow: '0 0 20px rgba(255, 255, 255, 0.7)', // Glow effect on hover
-                transform: 'scale(1.05)', // Slightly enlarge the card on hover
-                }
-              }}
-              onClick={() => handleCardClick(trip.name)}>
+              <Card
+                sx={{
+                  backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
+                  backdropFilter: 'blur(10px)', // Blur for glass effect
+                  borderRadius: '10px', // Rounded corners for the card
+                  boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
+                  border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
+                  color: 'white', // Ensure text is visible on dark background
+                  transition: '0.3s', // Smooth transition for the hover effect
+                  '&:hover': {
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.7)', // Glow effect on hover
+                    transform: 'scale(1.05)', // Slightly enlarge the card on hover
+                  }
+                }}
+                onClick={() => handleCardClick(trip.name)}>
                 <CardMedia
                   component="img"
-                  sx={{ width: '100%', 
-                    height: 200, 
+                  sx={{
+                    width: '100%',
+                    height: 200,
                     objectFit: 'cover'
-                   }} // Set fixed size and object fit
+                  }} // Set fixed size and object fit
                   image={trip.imageUrl}
                   alt={trip.name}
                 />
@@ -234,7 +245,7 @@ function Trips() {
                     {trip.description}
                   </Typography>
                   <Typography variant="body2" color="white">
-                    Destinations: {trip.destinations.map(dest => dest.name).join(', ')}
+                    Destinations: {trip.destinations.join(', ')}
                   </Typography>
                   <Typography variant="body2" color="white">
                     Additional Price: ${trip.additionalPrice}
