@@ -1,46 +1,62 @@
 "use client";
 import * as React from 'react';
 import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button } from '@mui/material';
-import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
-
-const initialTripsData = [
-  {
-    id: 1,
-    name: 'Thailand Adventure',
-    destinations: [
-      { id: 1, name: 'Bangkok', image: 'https://www.vietnamstay.com/DataUpload/Attractions/201932822432-bangkok-overview-aerial-view-2.jpg', description: 'Vibrant city with temples and street food.' },
-      { id: 2, name: 'Chiang Mai', image: 'https://static.independent.co.uk/2024/02/09/16/newFile.jpg', description: 'Mountain city with historical landmarks.' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Japan Exploration',
-    destinations: [
-      { id: 3, name: 'Tokyo', image: 'https://plus.unsplash.com/premium_photo-1661914240950-b0124f20a5c1?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8dG9reW8lMjBza3lsaW5lfGVufDB8fDB8fHww', description: 'High-tech city with rich culture.' },
-      { id: 4, name: 'Kyoto', image: 'https://lp-cms-production.imgix.net/2023-02/shutterstock_1017748444.jpg', description: 'Historic city with temples and gardens.' },
-    ],
-  },
-  // Add more trips similarly...
-];
+import ResponsiveAppBar from '../../components/navbar';
 
 function TripsPage() {
-  const [trips, setTrips] = React.useState(initialTripsData);
+  const [trips, setTrips] = React.useState([]);
+  const [email, setEmail] = React.useState(null);
 
-  const viewTripDetails = (tripId) => {
-    // Implement view details functionality (e.g., navigate to a details page or show a modal)
-    alert(`Viewing details for trip ID: ${tripId}`);
-  };
+  React.useEffect(() => {
+    const cookies = document.cookie.split('; ').reduce((prev, current) => {
+      const [name, ...rest] = current.split('=');
+      prev[name] = decodeURIComponent(rest.join('='));
+      return prev;
+    }, {});
 
-  const removeDestination = (tripId, destinationId) => {
-    setTrips(trips.map(trip => {
-      if (trip.id === tripId) {
-        return {
-          ...trip,
-          destinations: trip.destinations.filter(destination => destination.id !== destinationId)
-        };
+    const session = cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null;
+    if (session && session.email) {
+      setEmail(session.email);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (!email) return;
+
+    const fetchBookedTrips = async () => {
+      try {
+        const response = await fetch(`/api/booked-trips?email=${encodeURIComponent(email)}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setTrips(data);
+      } catch (error) {
+        console.error('Error fetching booked trips:', error);
       }
-      return trip;
-    }));
+    };
+
+    fetchBookedTrips();
+  }, [email]);
+
+  const removeBookedTrip = async (tripId) => {
+    try {
+      const response = await fetch('/api/remove-booked-trip', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, tripId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove booked trip');
+      }
+
+      setTrips(trips.filter(trip => trip._id !== tripId));
+    } catch (error) {
+      console.error('Error removing booked trip:', error);
+    }
   };
 
   return (
@@ -52,15 +68,15 @@ function TripsPage() {
         </Typography>
         <Grid container spacing={4}>
           {trips.map((trip) => (
-            <Grid item key={trip.id} xs={12} sm={6} md={4}>
+            <Grid item key={trip._id} xs={12} sm={6} md={4}>
               <Card
                 sx={{
-                  backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
-                  backdropFilter: 'blur(10px)', // Blur for glass effect
-                  borderRadius: '10px', // Rounded corners for the card
-                  boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)', // Soft shadow for depth
-                  border: '2px solid rgba(255, 255, 255, 0.2)', // Border to enhance the glass effect
-                  color: 'white', // Ensure text is visible on dark background
+                  backgroundColor: 'rgba(45, 46, 46, 0.4)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: '10px',
+                  boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)',
+                  border: '2px solid rgba(255, 255, 255, 0.2)',
+                  color: 'white',
                 }}
               >
                 <CardContent>
@@ -84,46 +100,28 @@ function TripsPage() {
                       <Typography variant="body2" color="text.white">
                         {destination.description}
                       </Typography>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          mt: 2,
-                          backgroundColor: 'rgba(32, 33, 33, 0.6)', // Dark transparent background
-                          color: 'white', // White text color for contrast
-                          borderRadius: '8px', // Rounded corners
-                          boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-                          transition: '0.3s ease-in-out', // Smooth transition
-                          '&:hover': {
-                            backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                          },
-                        }}
-                        onClick={() => viewTripDetails(trip.id)}
-                      >
-                        View Details
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        sx={{
-                          mt: 2,
-                          ml: 2,
-                          backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
-                          color: 'white', // White text color for contrast
-                          borderRadius: '8px', // Rounded corners
-                          boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
-                          transition: '0.3s ease-in-out', // Smooth transition
-                          '&:hover': {
-                            backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
-                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                          },
-                        }}
-                        onClick={() => removeDestination(trip.id, destination.id)}
-                      >
-                        Remove
-                      </Button>
                     </Box>
                   ))}
+                  <Button
+                    variant="contained"
+                    color="error"
+                    sx={{
+                      mt: 2,
+                      ml: 2,
+                      backgroundColor: 'rgba(107, 28, 33, 0.6)',
+                      color: 'white',
+                      borderRadius: '8px',
+                      boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)',
+                      transition: '0.3s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: 'rgba(227, 36, 46, 0.8)',
+                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)',
+                      },
+                    }}
+                    onClick={() => removeBookedTrip(trip._id)}
+                  >
+                    Remove
+                  </Button>
                 </CardContent>
               </Card>
             </Grid>
