@@ -21,6 +21,7 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [travelerSession, setTravelerSession] = React.useState(null);
   const [avatarImageUrl, setAvatarImageUrl] = React.useState(''); // Default avatar image
+  const [isAdmin, setIsAdmin] = React.useState(false); // State to track if the user is an admin
 
   React.useEffect(() => {
     const cookies = document.cookie.split('; ').reduce((prev, current) => {
@@ -47,6 +48,10 @@ function ResponsiveAppBar() {
         }
       })
       .catch(error => console.error('Error fetching traveler data:', error));
+
+      // Check if the user is an admin
+      const isAdminEmail = session.email === 'admin123@gmail.com'; // Replace with your admin email
+      setIsAdmin(isAdminEmail);
     }
   }, []);
 
@@ -136,7 +141,7 @@ function ResponsiveAppBar() {
                   </Link>
                 </MenuItem>
               ))}
-              {travelerSession && (
+              {!isAdmin && travelerSession && (
                 <MenuItem onClick={handleCloseNavMenu}>
                   <Link href="/booked" passHref>
                     <Typography textAlign="center">Booked</Typography>
@@ -222,21 +227,23 @@ function ResponsiveAppBar() {
               </>
             ) : (
               <>
-                <Link href="/booked" passHref>
-                  <Button
-                    sx={{
-                      my: 2, color: 'white',
-                      fontFamily: 'suse',
-                      fontSize: 15,
-                      display: 'block',
-                      textTransform: 'none',
-                      ml: 2,
-                      mr: 2,
-                    }}
-                  >
-                    Booked
-                  </Button>
-                </Link>
+                {!isAdmin && (
+                  <Link href="/booked" passHref>
+                    <Button
+                      sx={{
+                        my: 2, color: 'white',
+                        fontFamily: 'suse',
+                        fontSize: 15,
+                        display: 'block',
+                        textTransform: 'none',
+                        ml: 2,
+                        mr: 2,
+                      }}
+                    >
+                      Booked
+                    </Button>
+                  </Link>
+                )}
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar alt="User Avatar" src={avatarImageUrl} />

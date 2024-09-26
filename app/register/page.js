@@ -16,7 +16,7 @@ export default function RegisterPage() {
     setServerError(null); // Reset server error
     setSuccessMessage(null); // Reset success message
     try {
-      const response = await fetch(`${API_BASE}/travelers`, {
+      const response = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

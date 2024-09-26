@@ -12,6 +12,7 @@ function Destinations() {
   const [newDestination, setNewDestination] = React.useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
   const [currentDestination, setCurrentDestination] = React.useState({});
   const [searchQuery, setSearchQuery] = React.useState(''); // State for search query
+  const [isAdmin, setIsAdmin] = React.useState(false); // State to track if the user is an admin
 
   React.useEffect(() => {
     // Fetch destinations from the API
@@ -23,6 +24,23 @@ function Destinations() {
       .catch(error => {
         console.error('Error fetching destinations:', error);
       });
+
+      const cookies = document.cookie.split('; ').reduce((prev, current) => {
+        const [name, ...rest] = current.split('=');
+        prev[name] = decodeURIComponent(rest.join('='));
+        return prev;
+      }, {});
+  
+      console.log('Cookies:', cookies); // Debugging line to check cookies
+  
+      const travelerSession = cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null;
+      console.log('Session:', travelerSession); // Debugging line to check session
+  
+      if (travelerSession && travelerSession.email) {
+        const isAdminEmail = travelerSession.email === 'admin123@gmail.com'; // Replace with your admin email
+        console.log('Is Admin:', isAdminEmail); // Debugging line
+        setIsAdmin(isAdminEmail);
+      }
   }, []);
 
   const handleDeleteClick = async (id) => {
@@ -201,23 +219,25 @@ function Destinations() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <Button variant="contained"
-          sx={{
-            mt: 2,
-            float: 'right',
-            backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-            color: 'white', // White text color for contrast
-            borderRadius: '8px', // Rounded corners
-            boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-            transition: '0.3s ease-in-out', // Smooth transition
-            '&:hover': {
-              backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-              boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-            },
-          }}
-          onClick={handleClickOpen}>
-          Add Destination
-        </Button>
+        {isAdmin && (
+          <Button variant="contained"
+            sx={{
+              mt: 2,
+              float: 'right',
+              backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+              color: 'white', // White text color for contrast
+              borderRadius: '8px', // Rounded corners
+              boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+              transition: '0.3s ease-in-out', // Smooth transition
+              '&:hover': {
+                backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+              },
+            }}
+            onClick={handleClickOpen}>
+            Add Destination
+          </Button>
+        )}
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Add a New Destination</DialogTitle>
           <DialogContent>
@@ -364,48 +384,50 @@ function Destinations() {
                     {destination.price} THB
                   </Typography>
                 </CardContent>
-                <CardContent>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      mt: 1,
-                      float: 'right',
-                      mb: 2,
-                      backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
-                      color: 'white', // White text color for contrast
-                      borderRadius: '8px', // Rounded corners
-                      boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
-                      transition: '0.3s ease-in-out', // Smooth transition
-                      '&:hover': {
-                        backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
-                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                      },
-                    }}
-                    onClick={() => handleDeleteClick(destination._id)}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant="contained"
-                    sx={{
-                      mt: 1,
-                      float: 'left',
-                      mb: 2,
-                      backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
-                      color: 'white', // White text color for contrast
-                      borderRadius: '8px', // Rounded corners
-                      boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
-                      transition: '0.3s ease-in-out', // Smooth transition
-                      '&:hover': {
-                        backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
-                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                      },
-                    }}
-                    onClick={() => handleEditClickOpen(destination)}
-                  >
-                    Edit
-                  </Button>
-                </CardContent>
+                {isAdmin && (
+                  <CardContent>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        mt: 1,
+                        float: 'right',
+                        mb: 2,
+                        backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                        color: 'white', // White text color for contrast
+                        borderRadius: '8px', // Rounded corners
+                        boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                        transition: '0.3s ease-in-out', // Smooth transition
+                        '&:hover': {
+                          backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                          boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                        },
+                      }}
+                      onClick={() => handleDeleteClick(destination._id)}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        mt: 1,
+                        float: 'left',
+                        mb: 2,
+                        backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
+                        color: 'white', // White text color for contrast
+                        borderRadius: '8px', // Rounded corners
+                        boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
+                        transition: '0.3s ease-in-out', // Smooth transition
+                        '&:hover': {
+                          backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
+                          boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                        },
+                      }}
+                      onClick={() => handleEditClickOpen(destination)}
+                    >
+                      Edit
+                    </Button>
+                  </CardContent>
+                )}
               </Card>
             </Grid>
           ))}

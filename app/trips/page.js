@@ -18,7 +18,8 @@ function Trips() {
   const [open, setOpen] = React.useState(false);
   const [selectedTrip, setSelectedTrip] = React.useState(null);
   const [isEditing, setIsEditing] = React.useState(false);
-
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  
   React.useEffect(() => {
     // Fetch trips from MongoDB
     fetch('/api/trip')
@@ -40,6 +41,24 @@ function Trips() {
       .catch(error => {
         console.error('Error fetching destinations:', error);
       });
+
+    // Check if the user is an admin
+    const cookies = document.cookie.split('; ').reduce((prev, current) => {
+      const [name, ...rest] = current.split('=');
+      prev[name] = decodeURIComponent(rest.join('='));
+      return prev;
+    }, {});
+
+    console.log('Cookies:', cookies); // Debugging line to check cookies
+
+    const session = cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null; // Updated cookie name
+    console.log('Session:', session); // Debugging line to check session
+
+    if (session && session.email) {
+      const isAdminEmail = session.email === 'admin123@gmail.com'; // Replace with your admin email
+      console.log('Is Admin:', isAdminEmail); // Debugging line
+      setIsAdmin(isAdminEmail);
+    }
   }, []);
 
   React.useEffect(() => {
@@ -178,23 +197,25 @@ function Trips() {
             <Typography variant="h4" gutterBottom sx={{ fontFamily: 'suse' }}>
               Trip Packages
             </Typography>
-            <Button variant="contained"
-              sx={{
-                mt: 2,
-                float: 'right',
-                backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-                color: 'white', // White text color for contrast
-                borderRadius: '8px', // Rounded corners
-                boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-                transition: '0.3s ease-in-out', // Smooth transition
-                '&:hover': {
-                  backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                },
-              }}
-              onClick={handleClickOpen}>
-              Add Trip
-            </Button>
+            {isAdmin && (
+              <Button variant="contained"
+                sx={{
+                  mt: 2,
+                  float: 'right',
+                  backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+                  color: 'white', // White text color for contrast
+                  borderRadius: '8px', // Rounded corners
+                  boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+                  transition: '0.3s ease-in-out', // Smooth transition
+                  '&:hover': {
+                    backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                  },
+                }}
+                onClick={handleClickOpen}>
+                Add Trip
+              </Button>
+            )}
             <Dialog open={open} onClose={handleClose}>
               <DialogTitle>{isEditing ? 'Edit Trip' : 'Add a New Trip'}</DialogTitle>
               <DialogContent>
@@ -317,24 +338,26 @@ function Trips() {
                       <Typography variant="body2" color="white">
                         Additional Price: ${trip.additionalPrice}
                       </Typography>
-                      <Button variant="contained"
-                        sx={{
-                          mt: 1,
-                          float: 'right',
-                          mb: 2,
-                          backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
-                          color: 'white', // White text color for contrast
-                          borderRadius: '8px', // Rounded corners
-                          boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
-                          transition: '0.3s ease-in-out', // Smooth transition
-                          '&:hover': {
-                            backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
-                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                          },
-                        }}
-                        onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
-                        Delete
-                      </Button>
+                      {isAdmin && (
+                        <Button variant="contained"
+                          sx={{
+                            mt: 1,
+                            float: 'right',
+                            mb: 2,
+                            backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                            color: 'white', // White text color for contrast
+                            borderRadius: '8px', // Rounded corners
+                            boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                            transition: '0.3s ease-in-out', // Smooth transition
+                            '&:hover': {
+                              backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                              boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                            },
+                          }}
+                          onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
+                          Delete
+                        </Button>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>

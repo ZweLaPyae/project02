@@ -6,6 +6,29 @@ import {
 } from '@mui/material';
 
 function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleChange, handleEditTrip, newTrip, filteredDestinations, handleDestinationsChange, isEditing }) {
+  const [isAdmin, setIsAdmin] = React.useState(false);
+  const [isTraveler, setIsTraveler] = React.useState(false);
+
+  React.useEffect(() => {
+    const cookies = document.cookie.split('; ').reduce((prev, current) => {
+      const [name, ...rest] = current.split('=');
+      prev[name] = decodeURIComponent(rest.join('='));
+      return prev;
+    }, {});
+
+    console.log('Cookies:', cookies); // Debugging line to check cookies
+
+    const travelerSession = cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null;
+    console.log('Session:', travelerSession); // Debugging line to check session
+
+    if (travelerSession && travelerSession.email) {
+      const isAdminEmail = travelerSession.email === 'admin123@gmail.com'; // Replace with your admin email
+      console.log('Is Admin:', isAdminEmail); // Debugging line
+      setIsAdmin(isAdminEmail);
+      setIsTraveler(!isAdminEmail);
+    }
+  }, []);
+
   const handleBookNowClick = async () => {
     if (!tripDetails) {
       console.error('No trip selected');
@@ -82,48 +105,52 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
             <Typography variant="body2" color="white">
               Additional Price: THB {tripDetails.additionalPrice}
             </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                mt: 2,
-                mb: 2,
-                float: 'right',
-                backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-                color: 'white', // White text color for contrast
-                borderRadius: '8px', // Rounded corners
-                boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-                transition: '0.3s ease-in-out', // Smooth transition
-                '&:hover': {
-                  backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                },
-              }}
-              onClick={handleBookNowClick}
-            >
-              Book Now
-            </Button>
+            {isTraveler && (
+              <Button
+                variant="contained"
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  float: 'right',
+                  backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+                  color: 'white', // White text color for contrast
+                  borderRadius: '8px', // Rounded corners
+                  boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+                  transition: '0.3s ease-in-out', // Smooth transition
+                  '&:hover': {
+                    backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                  },
+                }}
+                onClick={handleBookNowClick}
+              >
+                Book Now
+              </Button>
+            )}
           </CardContent>
         </Card>
 
         <Box textAlign="center" sx={{ mt: 4 }}>
-          <Button variant="contained"
-            sx={{
-              mt: 1,
-              float: 'right',
-              mb: 2,
-              backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
-              color: 'white', // White text color for contrast
-              borderRadius: '8px', // Rounded corners
-              boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
-              transition: '0.3s ease-in-out', // Smooth transition
-              '&:hover': {
-                backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
-                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-              },
-            }}
-            onClick={onEdit}>
-            Edit
-          </Button>
+          {isAdmin && (
+            <Button variant="contained"
+              sx={{
+                mt: 1,
+                float: 'right',
+                mb: 2,
+                backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
+                color: 'white', // White text color for contrast
+                borderRadius: '8px', // Rounded corners
+                boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
+                transition: '0.3s ease-in-out', // Smooth transition
+                '&:hover': {
+                  backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                },
+              }}
+              onClick={onEdit}>
+              Edit
+            </Button>
+          )}
           <Button variant="contained"
             sx={{
               mt: 2,
