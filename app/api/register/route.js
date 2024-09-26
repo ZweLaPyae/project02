@@ -26,8 +26,15 @@ export async function POST(request) {
     // Try saving the new traveler to the database
     await newTraveler.save();
 
-    // Return the created traveler
-    return NextResponse.json(newTraveler, { status: 201 });
+    // Create a response and set a session cookie
+    const response = NextResponse.json({ message: 'Registration successful', email: newTraveler.email }, { status: 201 });
+    response.cookies.set('traveler_session', JSON.stringify({ email: newTraveler.email }), {
+      maxAge: 60 * 60 * 24, // Set expiration (e.g., 1 day)
+      path: '/', // Available to all pages
+    });
+
+    // Return the response
+    return response;
   } catch (error) {
     // Check for duplicate key error (code 11000)
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {

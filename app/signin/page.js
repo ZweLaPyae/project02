@@ -30,8 +30,6 @@ export default function SignInPage() {
         throw new Error(errorData.error || 'Failed to sign in');
       }
 
-      const oldTraveler = await response.json(); // Get the registered traveler's data
-
       setSuccessMessage('Login successful! Redirecting...');
 
       // Redirect to home page with query parameters

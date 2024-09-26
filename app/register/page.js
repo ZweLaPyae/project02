@@ -29,17 +29,10 @@ export default function RegisterPage() {
         throw new Error(errorData.message || 'Failed to register traveler');
       }
 
-      const newTraveler = await response.json(); // Get the registered traveler's data
-
       setSuccessMessage('Registration successful!'); // Show success message
 
-      // Encode data as query parameters
-      const queryParams = new URLSearchParams({
-        email: newTraveler.email,
-      }).toString();
-
       // Redirect to home page with query parameters
-      window.location.href = `/?${queryParams}`;
+      window.location.href = `/`;
     } catch (error) {
       if (error.message.includes('duplicate key error')) {
         setServerError('Email already exists. Please use a different email.');

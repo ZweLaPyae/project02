@@ -25,12 +25,13 @@ function TripsPage() {
 
     const fetchBookedTrips = async () => {
       try {
-        const response = await fetch(`/api/booked-trips?email=${encodeURIComponent(email)}`);
+        const response = await fetch(`/api/booked?email=${encodeURIComponent(email)}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
         setTrips(data);
+        console.log('Booked trips:', data);
       } catch (error) {
         console.error('Error fetching booked trips:', error);
       }
@@ -41,7 +42,7 @@ function TripsPage() {
 
   const removeBookedTrip = async (tripId) => {
     try {
-      const response = await fetch('/api/remove-booked-trip', {
+      const response = await fetch('/api/booked', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -77,37 +78,38 @@ function TripsPage() {
                   boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)',
                   border: '2px solid rgba(255, 255, 255, 0.2)',
                   color: 'white',
+                  transition: '0.3s',
+                  '&:hover': {
+                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.7)',
+                    transform: 'scale(1.05)',
+                  }
                 }}
               >
+                <CardMedia
+                  component="img"
+                  sx={{ width: '100%', height: 200, objectFit: 'cover' }}
+                  image={trip.imageUrl}
+                  alt={trip.name}
+                />
                 <CardContent>
-                  <Typography variant="h5" component="div">
+                  <Typography gutterBottom variant="h5" component="div">
                     {trip.name}
                   </Typography>
-                  <Typography variant="h6" component="div" sx={{ mt: 2 }}>
-                    Destinations
+                  <Typography variant="body2" color="white">
+                    {trip.description}
                   </Typography>
-                  {trip.destinations.map((destination) => (
-                    <Box key={destination.id} sx={{ mt: 2 }}>
-                      <CardMedia
-                        component="img"
-                        sx={{ width: '100%', height: 200, objectFit: 'cover' }}
-                        image={destination.image}
-                        alt={destination.name}
-                      />
-                      <Typography variant="body1" component="div">
-                        {destination.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.white">
-                        {destination.description}
-                      </Typography>
-                    </Box>
-                  ))}
+                  <Typography variant="body2" color="white">
+                    Destinations: {trip.destinations.join(', ')}
+                  </Typography>
+                  <Typography variant="body2" color="white">
+                    Additional Price: ${trip.additionalPrice}
+                  </Typography>
                   <Button
                     variant="contained"
-                    color="error"
                     sx={{
-                      mt: 2,
-                      ml: 2,
+                      mt: 1,
+                      float: 'right',
+                      mb: 2,
                       backgroundColor: 'rgba(107, 28, 33, 0.6)',
                       color: 'white',
                       borderRadius: '8px',

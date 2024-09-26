@@ -1,11 +1,16 @@
 "use client";
 import * as React from 'react';
-import { useRouter } from "next/navigation";
-import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField, MenuItem, Select, InputLabel, FormControl, Checkbox, ListItemText, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress } from '@mui/material';
+import { 
+  Box, Container, Typography, Grid,
+  Card, CardContent, CardMedia, Button, 
+  TextField, MenuItem, Select, InputLabel, 
+  FormControl, Checkbox, ListItemText, Dialog, 
+  DialogActions, DialogContent, DialogContentText, 
+  DialogTitle } from '@mui/material';
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
+import TripDetails from './tripDetails/page'; // Adjust the import path
 
 function Trips() {
-  const router = useRouter();
   const [trips, setTrips] = React.useState([]);
   const [newTrip, setNewTrip] = React.useState({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
   const [destinations, setDestinations] = React.useState([]);
@@ -58,8 +63,8 @@ function Trips() {
       if (response.ok) {
         const addedTrip = await response.json();
         setTrips([...trips, addedTrip]);
+        setOpen(false);
         setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
-        setOpen(false); // Close the modal after adding the trip
       } else {
         console.error('Failed to add trip');
       }
@@ -78,14 +83,13 @@ function Trips() {
         },
         body: JSON.stringify(newTrip),
       });
-  
+
       if (response.ok) {
         const updatedTrip = await response.json();
-        setTrips(trips.map(trip => trip.name === updatedTrip.name ? updatedTrip : trip));
-        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
-        setOpen(false); // Close the modal after editing the trip
+        setTrips(trips.map(trip => (trip.name === updatedTrip.name ? updatedTrip : trip)));
+        setOpen(false);
         setIsEditing(false);
-        setSelectedTrip(updatedTrip);
+        setNewTrip({ name: '', country: '', destinations: [], additionalPrice: '', description: '', imageUrl: '' });
       } else {
         console.error('Failed to edit trip');
       }
@@ -120,7 +124,6 @@ function Trips() {
     setNewTrip({ ...newTrip, [name]: value });
 
     if (name === 'country') {
-      // Filter destinations based on the typed country
       const filtered = destinations.filter(destination =>
         destination.countryName && destination.countryName.toLowerCase().includes(value.toLowerCase())
       );
@@ -157,8 +160,7 @@ function Trips() {
     setNewTrip(selectedTrip);
     setIsEditing(true);
     setOpen(true);
-  
-    // Filter destinations based on the selected trip's country
+
     const filtered = destinations.filter(destination =>
       destination.countryName && destination.countryName.toLowerCase().includes(selectedTrip.country.toLowerCase())
     );
@@ -173,24 +175,24 @@ function Trips() {
           <TripDetails tripDetails={selectedTrip} onBack={handleBackToTrips} onEdit={handleEditButtonClick} open={open} handleClose={handleClose} handleChange={handleChange} handleEditTrip={handleEditTrip} newTrip={newTrip} filteredDestinations={filteredDestinations} handleDestinationsChange={handleDestinationsChange} isEditing={isEditing} />
         ) : (
           <>
-            <Typography variant="h4" gutterBottom sx={{fontFamily: 'suse'}}>
+            <Typography variant="h4" gutterBottom sx={{ fontFamily: 'suse' }}>
               Trip Packages
             </Typography>
-            <Button variant="contained" 
-            sx={{
-              mt: 2,
-              float: 'right',
-              backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-              color: 'white', // White text color for contrast
-              borderRadius: '8px', // Rounded corners
-              boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-              transition: '0.3s ease-in-out', // Smooth transition
-              '&:hover': {
-                backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-              },
-            }}
-            onClick={handleClickOpen}>
+            <Button variant="contained"
+              sx={{
+                mt: 2,
+                float: 'right',
+                backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+                color: 'white', // White text color for contrast
+                borderRadius: '8px', // Rounded corners
+                boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+                transition: '0.3s ease-in-out', // Smooth transition
+                '&:hover': {
+                  backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                },
+              }}
+              onClick={handleClickOpen}>
               Add Trip
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -315,22 +317,22 @@ function Trips() {
                       <Typography variant="body2" color="white">
                         Additional Price: ${trip.additionalPrice}
                       </Typography>
-                      <Button variant="contained" 
-                      sx={{
-                        mt: 1,
-                        float: 'right',
-                        mb: 2,
-                        backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
-                        color: 'white', // White text color for contrast
-                        borderRadius: '8px', // Rounded corners
-                        boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
-                        transition: '0.3s ease-in-out', // Smooth transition
-                        '&:hover': {
-                          backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
-                          boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                        },
-                      }}
-                      onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
+                      <Button variant="contained"
+                        sx={{
+                          mt: 1,
+                          float: 'right',
+                          mb: 2,
+                          backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                          color: 'white', // White text color for contrast
+                          borderRadius: '8px', // Rounded corners
+                          boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                          transition: '0.3s ease-in-out', // Smooth transition
+                          '&:hover': {
+                            backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                          },
+                        }}
+                        onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
                         Delete
                       </Button>
                     </CardContent>
@@ -341,185 +343,6 @@ function Trips() {
           </>
         )}
       </Container>
-    </>
-  );
-}
-
-function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleChange, handleEditTrip, newTrip, filteredDestinations, handleDestinationsChange, isEditing }) {
-  return (
-    <>
-      <Container sx={{ py: 8 }}>
-        <Card
-          sx={{
-            backgroundColor: 'rgba(45, 46, 46, 0.4)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: '10px',
-            boxShadow: '0 10px 30px rgba(76, 77, 77, 0.5)',
-            border: '2px solid rgba(255, 255, 255, 0.2)',
-            color: 'white',
-            mb: 4,
-          }}
-        >
-          <CardMedia
-            component="img"
-            image={tripDetails.imageUrl}
-            alt={tripDetails.name}
-            sx={{ height: 400, objectFit: 'cover' }}
-          />
-          <CardContent>
-            <Typography variant="h5" gutterBottom>
-              {tripDetails.name} in {tripDetails.country}
-            </Typography>
-            <Typography variant="body2" color="white" gutterBottom>
-              {tripDetails.description}
-            </Typography>
-            <Typography variant="body2" color="white" gutterBottom>
-              Destinations: {tripDetails.destinations.join(', ')}
-            </Typography>
-            <Typography variant="body2" color="white">
-              Additional Price: ${tripDetails.additionalPrice}
-            </Typography>
-            <Button variant="contained" 
-              sx={{
-                mt: 2,
-                mb: 2,
-                float: 'right',
-                backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-                color: 'white', // White text color for contrast
-                borderRadius: '8px', // Rounded corners
-                boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-                transition: '0.3s ease-in-out', // Smooth transition
-                '&:hover': {
-                  backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-                },
-              }}>
-              Book Now
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Box textAlign="center" sx={{ mt: 4 }}>
-          <Button variant="contained" 
-            sx={{
-              mt: 1,
-              float: 'right',
-              mb: 2,
-              backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
-              color: 'white', // White text color for contrast
-              borderRadius: '8px', // Rounded corners
-              boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
-              transition: '0.3s ease-in-out', // Smooth transition
-              '&:hover': {
-                backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
-                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-              },
-            }}
-          onClick={onEdit}>
-            Edit
-          </Button>
-          <Button variant="contained" 
-          sx={{
-            mt: 2,
-            float: 'left',
-            backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-            color: 'white', // White text color for contrast
-            borderRadius: '8px', // Rounded corners
-            boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-            transition: '0.3s ease-in-out', // Smooth transition
-            '&:hover': {
-              backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-              boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-            },
-          }}
-          onClick={onBack}>
-            Back to Trips
-          </Button>
-        </Box>
-      </Container>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{isEditing ? 'Edit Trip' : 'Add a New Trip'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please fill out the form below to {isEditing ? 'edit' : 'add'} the trip package.
-          </DialogContentText>
-          <Box component="form" onSubmit={handleEditTrip} sx={{ mt: 2 }}>
-            <TextField
-              label="Trip Name"
-              name="name"
-              value={newTrip.name}
-              onChange={handleChange}
-              required
-              fullWidth
-              sx={{ mb: 2 }}
-              disabled={isEditing} // Disable editing the trip name
-            />
-            <TextField
-              label="Country Name"
-              name="country"
-              value={newTrip.country}
-              onChange={handleChange}
-              required
-              fullWidth
-              sx={{ mb: 2 }}
-              disabled={isEditing}
-            />
-            <FormControl fullWidth sx={{ mb: 2 }}>
-              <InputLabel>Destinations</InputLabel>
-              <Select
-                multiple
-                value={newTrip.destinations}
-                onChange={handleDestinationsChange}
-                renderValue={(selected) => selected.join(', ')}
-              >
-                {filteredDestinations.map((destination) => (
-                  <MenuItem key={destination._id} value={destination.name}>
-                    <Checkbox checked={newTrip.destinations.includes(destination.name)} />
-                    <ListItemText primary={destination.name} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField
-              label="Additional Price"
-              name="additionalPrice"
-              value={newTrip.additionalPrice}
-              onChange={handleChange}
-              required
-              type="number"
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Description"
-              name="description"
-              value={newTrip.description}
-              onChange={handleChange}
-              required
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Image URL"
-              name="imageUrl"
-              value={newTrip.imageUrl}
-              onChange={handleChange}
-              required
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button type="submit" color="primary">
-                Save Changes
-              </Button>
-            </DialogActions>
-          </Box>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

@@ -20,7 +20,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [travelerSession, setTravelerSession] = React.useState(null);
-  const [avatarImageUrl, setAvatarImageUrl] = React.useState('/static/images/avatar/2.jpg'); // Default avatar image
+  const [avatarImageUrl, setAvatarImageUrl] = React.useState(''); // Default avatar image
 
   React.useEffect(() => {
     const cookies = document.cookie.split('; ').reduce((prev, current) => {
