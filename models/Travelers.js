@@ -6,6 +6,7 @@ const travelersSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
+
 // Ensure indexes are created
 travelersSchema.index({ email: 1 }, { unique: true });
 

@@ -6,7 +6,9 @@ import ResponsiveAppBar from '../../components/navbar'; // Adjust the import pat
 function Destinations() {
   const [destinationsData, setDestinationsData] = React.useState([]);
   const [open, setOpen] = React.useState(false);
+  const [editOpen, setEditOpen] = React.useState(false);
   const [newDestination, setNewDestination] = React.useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
+  const [currentDestination, setCurrentDestination] = React.useState({});
 
   React.useEffect(() => {
     // Fetch destinations from the API
@@ -49,9 +51,23 @@ function Destinations() {
     setOpen(false);
   };
 
+  const handleEditClickOpen = (destination) => {
+    setCurrentDestination(destination);
+    setEditOpen(true);
+  };
+
+  const handleEditClose = () => {
+    setEditOpen(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setNewDestination({ ...newDestination, [name]: value });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setCurrentDestination({ ...currentDestination, [name]: value });
   };
 
   const handleAddDestination = async (e) => {
@@ -87,14 +103,76 @@ function Destinations() {
     }
   };
 
+  const handleEditDestination = async (e) => {
+    e.preventDefault();
+    try {
+      // Fetch the current destination data from the server
+      const response = await fetch(`/api/destinations?id=${currentDestination._id}`);
+      if (!response.ok) {
+        console.error('Failed to fetch current destination data');
+        return;
+      }
+      const existingDestination = await response.json();
+  
+      // Merge the updated fields with the existing data
+      const updatedDestination = {
+        id: currentDestination._id, // Ensure the ID is included
+        mediaUrl: currentDestination.mediaUrl,
+        price: currentDestination.price,
+        description: currentDestination.description,
+      };
+  
+      // Send the merged data to the server
+      const updateResponse = await fetch(`/api/destinations`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedDestination),
+      });
+  
+      if (updateResponse.ok) {
+        // Fetch all destinations after the update
+        const allDestinationsResponse = await fetch(`/api/destinations`);
+        if (!allDestinationsResponse.ok) {
+          console.error('Failed to fetch all destinations');
+          return;
+        }
+        const allDestinations = await allDestinationsResponse.json();
+        setDestinationsData(allDestinations); // Update the state with all destinations
+  
+        setCurrentDestination({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
+        setEditOpen(false); // Close the modal after editing the destination
+      } else {
+        console.error('Failed to edit destination');
+      }
+    } catch (error) {
+      console.error('Error editing destination:', error);
+    }
+  };
+
   return (
     <>
       <ResponsiveAppBar />
       <Container sx={{ py: 8 }}>
-        <Typography variant="h4" gutterBottom align="center">
+        <Typography variant="h4" gutterBottom sx={{fontFamily: 'suse'}}>
           All Destinations
         </Typography>
-        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        <Button variant="contained" 
+         sx={{
+          mt: 2,
+          float: 'right',
+          backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+          color: 'white', // White text color for contrast
+          borderRadius: '8px', // Rounded corners
+          boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+          transition: '0.3s ease-in-out', // Smooth transition
+          '&:hover': {
+            backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+          },
+        }}
+        onClick={handleClickOpen}>
           Add Destination
         </Button>
         <Dialog open={open} onClose={handleClose}>
@@ -161,11 +239,60 @@ function Destinations() {
             </Box>
           </DialogContent>
         </Dialog>
-        <Grid marginTop={5} container spacing={4}>
+        <Dialog open={editOpen} onClose={handleEditClose}>
+          <DialogTitle>Edit Destination</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please update the fields below to edit the destination.
+            </DialogContentText>
+            <Box component="form" onSubmit={handleEditDestination} sx={{ mt: 2 }}>
+              <TextField
+                label="Image URL"
+                name="mediaUrl"
+                value={currentDestination.mediaUrl}
+                onChange={handleEditChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Description"
+                name="description"
+                value={currentDestination.description}
+                onChange={handleEditChange}
+                required
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Price"
+                name="price"
+                value={currentDestination.price}
+                onChange={handleEditChange}
+                required
+                type="number"
+                fullWidth
+                sx={{ mb: 2 }}
+              />
+              <DialogActions>
+                <Button onClick={handleEditClose} color="primary">
+                  Cancel
+                </Button>
+                <Button type="submit" color="primary">
+                  Save Changes
+                </Button>
+              </DialogActions>
+            </Box>
+          </DialogContent>
+        </Dialog>
+        <Grid container spacing={4}>
           {destinationsData.map((destination, index) => (
-            <Grid item key={index} xs={12} sm={6} md={4}>
+            <Grid item key={index} xs={12} sm={6} md={3}>
               <Card
                 sx={{
+                  height: '100%', // Ensure the card takes the full height of the grid item
+                  display: 'flex',
+                  flexDirection: 'column',
                   backgroundColor: 'rgba(45, 46, 46, 0.4)', // Transparent black background
                   backdropFilter: 'blur(10px)', // Blur for glass effect
                   borderRadius: '10px', // Rounded corners for the card
@@ -180,7 +307,7 @@ function Destinations() {
                   image={destination.mediaUrl}
                   alt={destination.name}
                 />
-                <CardContent>
+                <CardContent sx={{ flexGrow: 1 }}>
                   <Typography variant="h5" component="div">
                     {destination.name}
                   </Typography>
@@ -193,12 +320,14 @@ function Destinations() {
                   <Typography variant="body2" color="gray">
                     {destination.price} THB
                   </Typography>
+                </CardContent>
+                <CardContent>
                   <Button
                     variant="contained"
-                    color="secondary"
                     sx={{
-                      mt: 2,
-
+                      mt: 1,
+                      float: 'right',
+                      mb: 2,
                       backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
                       color: 'white', // White text color for contrast
                       borderRadius: '8px', // Rounded corners
@@ -212,6 +341,26 @@ function Destinations() {
                     onClick={() => handleDeleteClick(destination._id)}
                   >
                     Delete
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      mt: 1,
+                      float: 'left',
+                      mb: 2,
+                      backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
+                      color: 'white', // White text color for contrast
+                      borderRadius: '8px', // Rounded corners
+                      boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
+                      transition: '0.3s ease-in-out', // Smooth transition
+                      '&:hover': {
+                        backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
+                        boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                      },
+                    }}
+                    onClick={() => handleEditClickOpen(destination)}
+                  >
+                    Edit
                   </Button>
                 </CardContent>
               </Card>

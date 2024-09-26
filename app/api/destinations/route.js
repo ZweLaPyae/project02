@@ -62,4 +62,31 @@ export async function DELETE(request) {
     return NextResponse.json({ error: `Failed to delete destination: ${error.message}` }, { status: 500 });
   }
 }
- 
+export async function PUT(request) {
+  await dbConnect();
+  try {
+    const body = await request.json(); // Parse request body
+
+    // Validate required fields
+    const { id, mediaUrl, price, description } = body;
+    if (!id || !mediaUrl || !price || !description) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    // Update the destination document
+    const updatedDestination = await Destinations.findByIdAndUpdate(
+      id,
+      { mediaUrl, price, description },
+      { new: true } // Return the updated document
+    );
+
+    // Return the updated destination
+    return NextResponse.json(updatedDestination, { status: 200 });
+  } catch (error) {
+    // Log the detailed error message for debugging
+    console.error("Error updating destination:", error.message || error);
+
+    // Respond with a detailed error message for debugging
+    return NextResponse.json({ error: `Failed to update destination: ${error.message}` }, { status: 500 });
+  }
+}
