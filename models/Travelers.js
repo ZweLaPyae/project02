@@ -12,6 +12,7 @@ const travelersSchema = new mongoose.Schema({
   bookedTrips: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Trips' }] // Reference to Trips model
 });
 
+
 // Ensure indexes are created
 travelersSchema.index({ email: 1 }, { unique: true });
 

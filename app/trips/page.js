@@ -173,10 +173,24 @@ function Trips() {
           <TripDetails tripDetails={selectedTrip} onBack={handleBackToTrips} onEdit={handleEditButtonClick} open={open} handleClose={handleClose} handleChange={handleChange} handleEditTrip={handleEditTrip} newTrip={newTrip} filteredDestinations={filteredDestinations} handleDestinationsChange={handleDestinationsChange} isEditing={isEditing} />
         ) : (
           <>
-            <Typography variant="h4" gutterBottom align="center">
+            <Typography variant="h4" gutterBottom sx={{fontFamily: 'suse'}}>
               Trip Packages
             </Typography>
-            <Button variant="contained" color="primary" onClick={handleClickOpen}>
+            <Button variant="contained" 
+            sx={{
+              mt: 2,
+              float: 'right',
+              backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+              color: 'white', // White text color for contrast
+              borderRadius: '8px', // Rounded corners
+              boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+              transition: '0.3s ease-in-out', // Smooth transition
+              '&:hover': {
+                backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+              },
+            }}
+            onClick={handleClickOpen}>
               Add Trip
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -301,7 +315,22 @@ function Trips() {
                       <Typography variant="body2" color="white">
                         Additional Price: ${trip.additionalPrice}
                       </Typography>
-                      <Button variant="contained" color="primary" onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
+                      <Button variant="contained" 
+                      sx={{
+                        mt: 1,
+                        float: 'right',
+                        mb: 2,
+                        backgroundColor: 'rgba(107, 28, 33, 0.6)', // Dark transparent background
+                        color: 'white', // White text color for contrast
+                        borderRadius: '8px', // Rounded corners
+                        boxShadow: '0 0 20px rgba(255, 92, 100, 0.2)', // Soft shadow for depth
+                        transition: '0.3s ease-in-out', // Smooth transition
+                        '&:hover': {
+                          backgroundColor: 'rgba(227, 36, 46, 0.8)', // Darker on hover
+                          boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                        },
+                      }}
+                      onClick={(e) => { e.stopPropagation(); handleDeleteTrip(index); }}>
                         Delete
                       </Button>
                     </CardContent>
@@ -350,14 +379,60 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
             <Typography variant="body2" color="white">
               Additional Price: ${tripDetails.additionalPrice}
             </Typography>
+            <Button variant="contained" 
+              sx={{
+                mt: 2,
+                mb: 2,
+                float: 'right',
+                backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+                color: 'white', // White text color for contrast
+                borderRadius: '8px', // Rounded corners
+                boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+                transition: '0.3s ease-in-out', // Smooth transition
+                '&:hover': {
+                  backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+                  boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+                },
+              }}>
+              Book Now
+            </Button>
           </CardContent>
         </Card>
 
         <Box textAlign="center" sx={{ mt: 4 }}>
-          <Button variant="contained" color="primary" onClick={onEdit}>
+          <Button variant="contained" 
+            sx={{
+              mt: 1,
+              float: 'right',
+              mb: 2,
+              backgroundColor: 'rgba(140, 109, 67, 0.6)', // Orange transparent background
+              color: 'white', // White text color for contrast
+              borderRadius: '8px', // Rounded corners
+              boxShadow: '0 0 20px rgba(255, 165, 0, 0.2)', // Soft shadow for depth
+              transition: '0.3s ease-in-out', // Smooth transition
+              '&:hover': {
+                backgroundColor: 'rgba(250, 178, 82, 0.8)', // Darker on hover
+                boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+              },
+            }}
+          onClick={onEdit}>
             Edit
           </Button>
-          <Button variant="contained" color="secondary" onClick={onBack} sx={{ ml: 2 }}>
+          <Button variant="contained" 
+          sx={{
+            mt: 2,
+            float: 'left',
+            backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+            color: 'white', // White text color for contrast
+            borderRadius: '8px', // Rounded corners
+            boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+            transition: '0.3s ease-in-out', // Smooth transition
+            '&:hover': {
+              backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+              boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+            },
+          }}
+          onClick={onBack}>
             Back to Trips
           </Button>
         </Box>
