@@ -46,7 +46,7 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-  const handleLogout = () => {
+  const handleSignOut = () => {
     Cookies.remove('traveler_session');  // Remove the session cookie
     setTravelerSession(null);  // Update the state
     window.location.href = `/`;  // Redirect to the home page
@@ -242,7 +242,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={setting === 'Logout' ? handleLogout : handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={setting === 'Sign Out' ? handleSignOut : handleCloseUserMenu}>
                   {setting === 'Profile' ? (
                     <Link href="/profile" passHref>
                       <Typography textAlign="center">{setting}</Typography>
