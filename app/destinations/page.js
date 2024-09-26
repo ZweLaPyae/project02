@@ -2,6 +2,8 @@
 import * as React from 'react';
 import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 
 function Destinations() {
   const [destinationsData, setDestinationsData] = React.useState([]);
@@ -9,6 +11,7 @@ function Destinations() {
   const [editOpen, setEditOpen] = React.useState(false);
   const [newDestination, setNewDestination] = React.useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
   const [currentDestination, setCurrentDestination] = React.useState({});
+  const [searchQuery, setSearchQuery] = React.useState(''); // State for search query
 
   React.useEffect(() => {
     // Fetch destinations from the API
@@ -113,7 +116,7 @@ function Destinations() {
         return;
       }
       const existingDestination = await response.json();
-  
+
       // Merge the updated fields with the existing data
       const updatedDestination = {
         id: currentDestination._id, // Ensure the ID is included
@@ -121,7 +124,7 @@ function Destinations() {
         price: currentDestination.price,
         description: currentDestination.description,
       };
-  
+
       // Send the merged data to the server
       const updateResponse = await fetch(`/api/destinations`, {
         method: 'PUT',
@@ -130,7 +133,7 @@ function Destinations() {
         },
         body: JSON.stringify(updatedDestination),
       });
-  
+
       if (updateResponse.ok) {
         // Fetch all destinations after the update
         const allDestinationsResponse = await fetch(`/api/destinations`);
@@ -140,7 +143,7 @@ function Destinations() {
         }
         const allDestinations = await allDestinationsResponse.json();
         setDestinationsData(allDestinations); // Update the state with all destinations
-  
+
         setCurrentDestination({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
         setEditOpen(false); // Close the modal after editing the destination
       } else {
@@ -151,28 +154,68 @@ function Destinations() {
     }
   };
 
+  // Filter destinations based on search query
+  const filteredDestinations = destinationsData.filter(destination =>
+    destination.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    destination.countryName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <>
       <ResponsiveAppBar />
       <Container sx={{ py: 8 }}>
-        <Typography variant="h4" gutterBottom sx={{fontFamily: 'suse'}}>
+        <Typography variant="h4" gutterBottom sx={{ fontFamily: 'suse' }}>
           All Destinations
         </Typography>
-        <Button variant="contained" 
-         sx={{
-          mt: 2,
-          float: 'right',
-          backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
-          color: 'white', // White text color for contrast
-          borderRadius: '8px', // Rounded corners
-          boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
-          transition: '0.3s ease-in-out', // Smooth transition
-          '&:hover': {
-            backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
-            boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
-          },
-        }}
-        onClick={handleClickOpen}>
+        <TextField
+          label="Search Destinations"
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: 'white' }} />
+              </InputAdornment>
+            ),
+            style: { color: 'white' }
+          }}
+          sx={{
+            '& label': {
+              color: 'white', // label color when focused
+            },
+            '& label.Mui-focused': {
+              color: 'rgba(243, 245, 147, 0.8)', // label color when focused
+            },
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'white', // normal border color
+              },
+              '&:hover fieldset': {
+                borderColor: 'white', // hover border color
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'rgba(243, 245, 147, 0.8)', // focused border color
+              },
+            },
+          }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Button variant="contained"
+          sx={{
+            mt: 2,
+            float: 'right',
+            backgroundColor: 'rgba(116, 117, 47, 0.6)', // Dark transparent background
+            color: 'white', // White text color for contrast
+            borderRadius: '8px', // Rounded corners
+            boxShadow: '0 0 10px rgba(255, 255, 255, 0.2)', // Soft shadow for depth
+            transition: '0.3s ease-in-out', // Smooth transition
+            '&:hover': {
+              backgroundColor: 'rgba(243, 245, 147, 0.8)', // Darker on hover
+              boxShadow: '0 0 20px rgba(255, 255, 255, 0.6)', // Glow effect on hover
+            },
+          }}
+          onClick={handleClickOpen}>
           Add Destination
         </Button>
         <Dialog open={open} onClose={handleClose}>
@@ -286,7 +329,7 @@ function Destinations() {
           </DialogContent>
         </Dialog>
         <Grid container spacing={4}>
-          {destinationsData.map((destination, index) => (
+          {filteredDestinations.map((destination, index) => (
             <Grid item key={index} xs={12} sm={6} md={3}>
               <Card
                 sx={{
