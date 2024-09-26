@@ -20,6 +20,7 @@ function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [travelerSession, setTravelerSession] = React.useState(null);
+  const [avatarImageUrl, setAvatarImageUrl] = React.useState('/static/images/avatar/2.jpg'); // Default avatar image
 
   React.useEffect(() => {
     const cookies = document.cookie.split('; ').reduce((prev, current) => {
@@ -28,9 +29,27 @@ function ResponsiveAppBar() {
       return prev;
     }, {});
 
-    setTravelerSession(cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null);
+    const session = cookies.traveler_session ? JSON.parse(cookies.traveler_session) : null;
+    setTravelerSession(session);
+
+    if (session && session.email) {
+      fetch(`/api/profile?email=${encodeURIComponent(session.email)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.token}`
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.avatarImageUrl) {
+          setAvatarImageUrl(data.avatarImageUrl);
+        }
+      })
+      .catch(error => console.error('Error fetching traveler data:', error));
+    }
   }, []);
-  
+
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -220,7 +239,7 @@ function ResponsiveAppBar() {
                 </Link>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                    <Avatar alt="User Avatar" src={avatarImageUrl} />
                   </IconButton>
                 </Tooltip>
               </>
