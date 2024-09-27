@@ -103,7 +103,7 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
               Destinations: {tripDetails.destinations.join(', ')}
             </Typography>
             <Typography variant="body2" color="white">
-              Additional Price: THB {tripDetails.additionalPrice}
+              Additional Price: {tripDetails.additionalPrice}THB
             </Typography>
             {isTraveler && (
               <Button

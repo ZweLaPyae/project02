@@ -215,6 +215,7 @@ function Destinations() {
                 borderColor: 'rgba(243, 245, 147, 0.8)', // focused border color
               },
             },
+            mb: 2,
           }}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}

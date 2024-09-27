@@ -336,7 +336,7 @@ function Trips() {
                         Destinations: {trip.destinations.join(', ')}
                       </Typography>
                       <Typography variant="body2" color="white">
-                        Additional Price: ${trip.additionalPrice}
+                        Additional Price: {trip.additionalPrice}THB
                       </Typography>
                       {isAdmin && (
                         <Button variant="contained"
