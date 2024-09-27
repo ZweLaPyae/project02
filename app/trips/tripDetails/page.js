@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Box, Container, Typography, Card, CardContent, CardMedia, Button,
   TextField, MenuItem, Select, InputLabel, FormControl, Checkbox,
   ListItemText, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
 
-function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleChange, handleEditTrip, newTrip, filteredDestinations, handleDestinationsChange, isEditing }) {
+function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleChange, handleEditTrip, newTrip, filteredDestinations, handleDestinationsChange, isEditing, fromHomePage }) {
   const [isAdmin, setIsAdmin] = React.useState(false);
   const [isTraveler, setIsTraveler] = React.useState(false);
 
@@ -72,6 +73,10 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
     console.log(`Booking trip: ${tripDetails.name}`);
   };
 
+  if (!tripDetails) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <>
       <Container sx={{ py: 8 }}>
@@ -131,7 +136,7 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
         </Card>
 
         <Box textAlign="center" sx={{ mt: 4 }}>
-          {isAdmin && (
+          {!fromHomePage && isAdmin && (
             <Button variant="contained"
               sx={{
                 mt: 1,
@@ -166,7 +171,7 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
               },
             }}
             onClick={onBack}>
-            Back to Trips
+            {fromHomePage ? 'Back to Home' : 'Back to Trips'}
           </Button>
         </Box>
       </Container>
@@ -256,5 +261,58 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
     </>
   );
 }
+
+TripDetails.propTypes = {
+  tripDetails: PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+    imageUrl: PropTypes.string,
+    country: PropTypes.string,
+    destinations: PropTypes.arrayOf(PropTypes.string),
+    additionalPrice: PropTypes.number,
+  }),
+  onBack: PropTypes.func.isRequired,
+  onEdit: PropTypes.func,
+  open: PropTypes.bool,
+  handleClose: PropTypes.func,
+  handleChange: PropTypes.func,
+  handleEditTrip: PropTypes.func,
+  newTrip: PropTypes.shape({
+    name: PropTypes.string,
+    description: PropTypes.string,
+    imageUrl: PropTypes.string,
+    country: PropTypes.string,
+    destinations: PropTypes.arrayOf(PropTypes.string),
+    additionalPrice: PropTypes.number,
+  }),
+  filteredDestinations: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+    name: PropTypes.string,
+  })),
+  handleDestinationsChange: PropTypes.func,
+  isEditing: PropTypes.bool,
+  fromHomePage: PropTypes.bool,
+};
+
+TripDetails.defaultProps = {
+  tripDetails: null,
+  onEdit: () => {},
+  open: false,
+  handleClose: () => {},
+  handleChange: () => {},
+  handleEditTrip: () => {},
+  newTrip: {
+    name: '',
+    description: '',
+    imageUrl: '',
+    country: '',
+    destinations: [],
+    additionalPrice: 0,
+  },
+  filteredDestinations: [],
+  handleDestinationsChange: () => {},
+  isEditing: false,
+  fromHomePage: false,
+};
 
 export default TripDetails;
