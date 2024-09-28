@@ -102,7 +102,7 @@ function TripsPage() {
                     Destinations: {trip.destinations.join(', ')}
                   </Typography>
                   <Typography variant="body2" color="white">
-                    Additional Price: ${trip.additionalPrice}
+                    Price: ${trip.additionalPrice}
                   </Typography>
                   <Button
                     variant="contained"

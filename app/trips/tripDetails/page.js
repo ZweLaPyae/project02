@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -5,10 +6,10 @@ import {
   TextField, MenuItem, Select, InputLabel, FormControl, Checkbox,
   ListItemText, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from '@mui/material';
-
+import {useState} from 'react';
 function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleChange, handleEditTrip, newTrip, filteredDestinations, handleDestinationsChange, isEditing, fromHomePage }) {
-  const [isAdmin, setIsAdmin] = React.useState(false);
-  const [isTraveler, setIsTraveler] = React.useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isTraveler, setIsTraveler] = useState(false);
 
   React.useEffect(() => {
     const cookies = document.cookie.split('; ').reduce((prev, current) => {
@@ -108,7 +109,7 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
               Destinations: {tripDetails.destinations.join(', ')}
             </Typography>
             <Typography variant="body2" color="white">
-              Additional Price: {tripDetails.additionalPrice}THB
+              Price: {tripDetails.additionalPrice}THB
             </Typography>
             {isTraveler && (
               <Button
@@ -220,7 +221,7 @@ function TripDetails({ tripDetails, onBack, onEdit, open, handleClose, handleCha
               </Select>
             </FormControl>
             <TextField
-              label="Additional Price"
+              label="Price"
               name="additionalPrice"
               value={newTrip.additionalPrice}
               onChange={handleChange}

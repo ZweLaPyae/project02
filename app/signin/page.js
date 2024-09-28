@@ -124,7 +124,7 @@ export default function SignInPage() {
       {successMessage && <Typography color="success.main">{successMessage}</Typography>}
 
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        Don't have an account?{' '}
+        Do not have an account?{' '}
         <Link href="/register" passHref>
           <Typography component="span" sx={{ color: 'primary.main', cursor: 'pointer' }}>
             Register here

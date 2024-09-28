@@ -259,7 +259,7 @@ function Trips() {
                     </Select>
                   </FormControl>
                   <TextField
-                    label="Additional Price"
+                    label="Price"
                     name="additionalPrice"
                     value={newTrip.additionalPrice}
                     onChange={handleChange}
@@ -336,7 +336,7 @@ function Trips() {
                         Destinations: {trip.destinations.join(', ')}
                       </Typography>
                       <Typography variant="body2" color="white">
-                        Additional Price: {trip.additionalPrice}THB
+                        Price: {trip.additionalPrice}THB
                       </Typography>
                       {isAdmin && (
                         <Button variant="contained"

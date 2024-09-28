@@ -4,17 +4,18 @@ import { Box, Container, Typography, Grid, Card, CardContent, CardMedia, Button,
 import ResponsiveAppBar from '../../components/navbar'; // Adjust the import path
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useState, useEffect } from 'react';
 
 function Destinations() {
-  const [destinationsData, setDestinationsData] = React.useState([]);
-  const [open, setOpen] = React.useState(false);
-  const [editOpen, setEditOpen] = React.useState(false);
-  const [newDestination, setNewDestination] = React.useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
-  const [currentDestination, setCurrentDestination] = React.useState({});
-  const [searchQuery, setSearchQuery] = React.useState(''); // State for search query
-  const [isAdmin, setIsAdmin] = React.useState(false); // State to track if the user is an admin
+  const [destinationsData, setDestinationsData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [newDestination, setNewDestination] = useState({ countryName: '', name: '', price: '', description: '', mediaUrl: '' });
+  const [currentDestination, setCurrentDestination] = useState({});
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [isAdmin, setIsAdmin] = useState(false); // State to track if the user is an admin
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Fetch destinations from the API
     fetch('/api/destinations')
       .then(response => response.json())
