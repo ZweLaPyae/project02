@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Havenly Travels (Travel Booking Platform)
 
-## Getting Started
+Welcome to Havenly Travels, the Travel Booking Platform! This project is built with Next.js and Material-UI to provide a seamless and visually appealing user experience.
 
-First, run the development server:
+## Team Members
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Zwe La Pyae](https://github.com/ZweLaPyae/project02)
+- [Khant Min Lwin](https://github.com/hydromelonn229/project02)
+- [Thet Myat Noe Thwin](https://github.com/juliaizbroke/project02)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Project Description
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+Havenly Travels is a comprehensive web-based travel management platform that streamlines the process of exploring destinations, booking trips, and managing itineraries. Designed to simplify the travel experience, the platform offers users the ability to browse a variety of destinations, make bookings, and manage their trips with ease. Additionally, an admin panel ensures that the destination content remains up-to-date and relevant. Powered by a REST API, Havenly Travels handles all essential CRUD operations, making it an efficient and user-friendly solution for both travelers and administrators.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Key Features
 
-## Learn More
+***For Guest Users:***
+- **Registration and Sign in:** Register and sign in to account.
+- **Browse and Search Trips and Destinations**: Explore various travel destinations and trips and search for the desired ones.
 
-To learn more about Next.js, take a look at the following resources:
+***For Registered Users:***
+- **Sign in:** Sign in to account.
+- **Browse and Search Trips and Destinations**: Explore various travel destinations and trips and search for the desired ones.
+- **Edit Profile:** Edit details such as age, country, phone number, profile image and description.
+- **Manage Booked Trips:** Book the desired trips. View the booked trips. Cancel unwanted booked trips.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+***For Admin:***
+- **Sign in:** Sign in to account.
+- **Edit Profile:** Edit details such as age, country, phone number, profile image and description.
+- **Manage Trips and Destinations**: Admins can add, edit, and delete trips and destinations.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Data Models
+***Trips:***
+- **Create(POST):** Admin can add trips.
+- **Read(GET):** Guest users and Travelers(Registered users) can explore various trips.
+- **Update(PUT):** Admin can edit trips.
+- **Delete(DELETE):** Admin can delete trips.
 
-## Deploy on Vercel
+***Destinations:***
+- **Create(POST):** Admin can add destinations.
+- **Read(GET):** Guest users and Travelers(Registered users) can explore various destinations.
+- **Update(PUT):** Admin can edit destinations.
+- **Delete(DELETE):** Admin can delete destinations.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+***Travelers:***
+- **Create(POST):** Users register to become a Traveler(Registered User).
+- **Read(GET):** Travelers can check profile and booked trips.
+- **Update(PUT):** Travelers can add(book) trips.
+- **Delete(DELETE):** Travelers can delete booked trips.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Screenshots
+
+### Home Page
+![Home Page](screenshots/home.png)
+
+### Trips Page & TripDetails Page
+![Trips Page](screenshots/trips.png)
+![TripDetails Page](screenshots/tripdetails.png)
+
+### Destinations Page
+![Destinations Page](screenshots/destinations.png)
+
+### SignIn Page
+![SignIn Page](screenshots/signin.png)
+
+### Register Page
+![Register Page](screenshots/register.png)
+
+### Profile Page
+![Profile Page](screenshots/profile.png)
+
+### Booked Trips
+![Booked Trips](screenshots/booked.png)
+
+### Admin POV
+![Admin Trips Page](screenshots/admin_trips.png)
+![Admin TripDetails Page](screenshots/admin_tripdetails.png)
+![Admin Destinations Page](screenshots/admin_destinations.png)
